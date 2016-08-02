@@ -13,7 +13,8 @@
     "file-upload": "^1.7.5",
     "paper-chip": "^1.0.0",
     "plutonium-manageable-content": "lordoftheflies/plutonium-manageable-content#^0.0.2",
-    "plutonium-elements": "lordoftheflies/plutonium-elements#^0.0.2"
+    "plutonium-elements": "lordoftheflies/plutonium-elements#^0.0.2",
+    "plutonium-avatar-button": "lordoftheflies/plutonium-avatar-button#^0.0.8"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
