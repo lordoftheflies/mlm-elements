@@ -1,0 +1,283 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../neon-animation/neon-animations.html">
+<link rel="import" href="../iron-overlay-behavior/iron-overlay-behavior.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+<link rel="import" href="../paper-card/paper-card.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-material/paper-material.html">
+<link rel="import" href="../iron-list/iron-list.html">
+<link rel="import" href="mlm-shared-styles.html">
+<link rel="import" href="../plutonium-elements/plutonium-widget-behavior.html">
+<link rel="import" href="../plutonium-elements/plutonium-authorization-behavior.html">
+
+
+<!--
+`<mlm-network-view>` Organization page of the application.
+
+In typical use, just slap some `<mlm-network-view>` at the top of your body:
+
+    <body>
+      <mlm-network-view></mlm-network-view>
+
+Wham! It's all awesome now!
+
+    @group Mlm Elements
+    @demo demo/mlm-network-view-index.html
+-->
+<dom-module id="mlm-network-view">
+
+    <template>
+
+        <style include="mlm-shared-styles">
+            :host {
+                display: block;
+                @apply(--layout-vertical);
+            }
+
+        </style>
+
+        <iron-ajax id="genocideIronAjax" 
+                   url="[[apiUrl]]/addressbook/genocide" 
+                   params="[[genocideRequestParams]]" 
+                   last-response="{{parents}}" 
+                   auto>
+
+        </iron-ajax>
+        <iron-ajax id="childrenIronAjax" 
+                   url="[[apiUrl]]/addressbook/children" 
+                   params="[[childrenRequestParams]]" 
+                   last-response="{{data}}" 
+                   auto>
+
+        </iron-ajax>
+
+        <iron-list id="childrenIronList" items="[[data]]" as="item" hidden="[[isEmpty(data)]]" class="layout vertical">
+            <template>
+                <paper-item class="layout horizontal">
+                    <paper-material class="flex layout horizontal" nodename="[[item.name]]"  nodeid="[[item.id]]" role="[[item.role]]" on-tap="onNavigateToChildren"  tabindex="[[tabIndex]]">
+                        <div class="flex">
+                            <iron-icon icon="[[getIcon(item.role)]]"></iron-icon>
+                            <span >[[item.name]]</span>
+                        </div>
+                    </paper-material>
+                </paper-item>
+            </template>
+        </iron-list>
+
+        <paper-card elevation="1" hidden="[[!isEmpty(data)]]">
+            <div class="card-content">
+                <div id="emptyChildrenText">No children.</div>
+            </div>
+        </paper-card>
+
+    </template>
+
+    <script>
+
+        Polymer({
+            is: 'mlm-network-view',
+            behaviors: [
+                PlutoniumBehaviors.WidgetBehavior,
+                PlutoniumBehaviors.AuthorizationBehavior
+            ],
+            properties: {
+                genocideRequestParams: {
+                    type: Object,
+                    notify: true,
+                    computed: 'computeGenocideRenocideRequestParams(selectedAccountId)'
+                },
+                childrenRequestParams: {
+                    type: Object,
+                    notify: true,
+                    computed: 'computeChildrenRequestParams(selectedAccountId)'
+                },
+                selectedAccountId: {
+                    type: String,
+                    notify: true,
+//                    reflectToAttribute: true
+                },
+                selectedRole: {
+                    type: String,
+                    notify: true
+                },
+                selectedName: {
+                    type: String,
+                    notify: true
+                },
+                possibleParents: {
+                    type: Array,
+                    notify: true
+                },
+                locales: {
+                    type: Array,
+                    notify: true
+                },
+                selectedType: {
+                    type: String,
+                    notify: true,
+                    value: 'USER'
+                },
+                parents: {
+                    type: Array,
+                    notify: true
+                }
+            },
+            observers: [
+                'observeChildRequestParams(selectedAccountId)',
+                'observeGenocideRequestParams(selectedAccountId)',
+                'observeOwnerChange(accountId)'
+            ],
+            listeners: {
+//                'deleteMemberForm.iron-form-response': 'onDeleteMemberResponse',
+//                'deleteMemberForm.iron-form-error': 'onDeleteMemberError',
+//                'promoteMemberForm.iron-form-response': 'onPromoteMemberResponse',
+//                'promoteMemberForm.iron-form-error': 'onPromoteMemberError',
+//                'demoteMemberForm.iron-form-response': 'onDemoteMemberResponse',
+//                'demoteMemberForm.iron-form-error': 'onDemoteMemberError',
+                'iron-select': 'onSelectMember',
+                'network-tree-refresh': 'onRefresh'
+            },
+            ready: function () {
+                console.log(this.is + ' is ready.');
+            },
+            observeOwnerChange: function (accountId) {
+                this.selectedAccountId = accountId;
+            },
+            observeChildRequestParams: function (selectedAccountId) {
+//                this.childrenRequestParams.parentId = selectedAccountId;
+                console.log(this.is + ' child request parameters updated: ' + JSON.stringify(this.childrenRequestParams))
+                this.$.childrenIronAjax.generateRequest();
+            },
+            observeGenocideRequestParams: function (selectedAccountId) {
+//                this.genocideRequestParams.childId = selectedAccountId;
+                console.log(this.is + ' genocide request parameters updated: ' + JSON.stringify(this.genocideRequestParams))
+                this.$.genocideIronAjax.generateRequest();
+            },
+            computeChildrenRequestParams: function () {
+                return {
+                    parentId: this.selectedAccountId
+                };
+            },
+            computeGenocideRenocideRequestParams: function () {
+                return {
+                    childId: this.selectedAccountId
+                };
+            },
+//            computeSelected: function (accountId) {
+//                console.log('Change selected member from ' + this.selectedAccount + ' to ' + accountId);
+//                this.selectedAccount = accountId;
+//                this.childrenRequestParams.parentId = this.selectedAccount;
+//                this.genocideRequestParams.childId = this.selectedAccount;
+////                this.$.childrenIronAjax.generateRequest();
+////                this.$.genocideIronAjax.generateRequest();
+//            },
+            onSelectMember: function (event, details) {
+                console.log('Network-view select account:');
+                this.unusedCodes = details.item.unusedcodes;
+                this.selectedRole = details.item.role;
+//                    this.$.childrenIronAjax.generateRequest();
+//                    this.$.genocideIronAjax.generateRequest();
+//                    
+            },
+            onNavigateToChildren: function (event, details) {
+//                this.accountId = event.currentTarget.nodeid;
+                this.selectedAccountId = event.currentTarget.nodeid;
+                this.selectedRole = event.currentTarget.role;
+                this.selectedName = event.currentTarget.nodename;
+                console.log('Network-view navigate to children ');
+
+            },
+            onNavigateUp: function (event, details) {
+                this.accountId = this.$.parentBeadCrumbs.children[this.$.parentBeadCrumbs.children.length < 3 ? 0 : this.$.parentBeadCrumbs.children.length - 3].nodeid;
+                this.selectedAccount = this.accountId;
+                this.$.childrenIronAjax.generateRequest();
+                this.$.genocideIronAjax.generateRequest();
+                console.log('Network-view navigate to children ');
+            },
+            onRefresh: function () {
+                this.$.childrenIronAjax.generateRequest();
+                this.$.genocideIronAjax.generateRequest();
+            },
+//            onCreateMember: function () {
+//                this.$.newMemberForm.submit();
+//            },
+//            onCreateMemberRepeat: function () {
+//                this.$.newMemberForm.submit();
+//                this.$.newMemberForm.email.value = '';
+//                this.$.newMemberForm.role.value = 'USER';
+//                this.$.newMemberForm.name.value = '';
+////                    this.$.newMemberForm.preferredLangiage.value = '';
+//
+////                    this.$.memberDialog.open();
+//            },
+//            onDeleteMemberResponse: function (event, details) {
+//                console.log('Member removed successfully: ' + JSON.stringify(details.response));
+//                this.$.childrenIronAjax.generateRequest();
+//                this.fire('feedback', {
+//                    message: 'Member removed successfully.'
+//                });
+//            },
+//            onDeleteMemberError: function (event, details) {
+//                console.log('Remove-member error: ' + JSON.stringify(details.response));
+//                this.fire('feedback', {
+//                    message: 'Member removing failed.'
+//                });
+//            },
+//            onPromoteMemberResponse: function (event, details) {
+//                console.log('Member promoted successfully: ' + JSON.stringify(details.response));
+//                this.$.childrenIronAjax.generateRequest();
+//                this.fire('feedback', {
+//                    message: 'Member promoted successfully'
+//                });
+//            },
+//            onPromoteMemberError: function (event, details) {
+//                console.log('Promote-member error: ' + JSON.stringify(details.response));
+//                this.fire('feedback', {
+//                    message: 'Member promoting failed.'
+//                });
+//            },
+//            onDemoteMemberResponse: function (event, details) {
+//                console.log('Member demoted successfully: ' + JSON.stringify(details.response));
+//                this.$.childrenIronAjax.generateRequest();
+//                this.fire('feedback', {
+//                    message: 'Member demoted successfully'
+//                });
+//            },
+//            onDemoteMemberError: function (event, details) {
+//                console.log('Demote-member error: ' + JSON.stringify(details.response));
+//                this.fire('feedback', {
+//                    message: 'Member demoting failed.'
+//                });
+//            },
+            isEmpty: function (data) {
+                return data === undefined || data === null || data.length === 0;
+            },
+//            onDemoteMemberPrompted: function () {
+//                this.$.demoteMemberForm.submit();
+//                console.log('Demote member prompted.');
+//            },
+//            onDeleteMemberPrompted: function () {
+//                this.$.deleteMemberForm.submit();
+//                console.log('Delete member prompted.');
+//            },
+//            onPromoteMemberPrompted: function () {
+//                this.$.promoteMemberForm.submit();
+//                console.log('Promote member prompted.');
+//            },
+//            openNewMember: function () {
+//                this.$.memberDialog.open();
+//            }
+        });
+
+    </script>
+
+</dom-module>

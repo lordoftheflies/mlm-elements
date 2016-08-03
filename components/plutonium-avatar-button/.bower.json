@@ -1,0 +1,28 @@
+{
+  "name": "plutonium-avatar-button",
+  "description": "Avatar menu button.",
+  "main": "plutonium-avatar-button.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "paper-item": "polymerelements/paper-item#^1.2.1",
+    "paper-menu": "polymerelements/paper-menu#^1.2.2",
+    "paper-menu-button": "polymerelements/paper-menu-button#^1.5.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "homepage": "https://github.com/lordoftheflies/plutonium-avatar-button",
+  "version": "0.0.8",
+  "_release": "0.0.8",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.8",
+    "commit": "71429db068df491073d5a90d290e6cff0fe41d11"
+  },
+  "_source": "git://github.com/lordoftheflies/plutonium-avatar-button.git",
+  "_target": "^0.0.8",
+  "_originalSource": "lordoftheflies/plutonium-avatar-button"
+}
