@@ -25,7 +25,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <template>
 
-        <style include="topflavon-shared-styles">
+        <style include="mlm-shared-styles">
 
             .main-action-fab-container {
                 position: relative;
@@ -287,12 +287,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
              */
             onClearRecipients: function () {
                 this.splice('selectedItemIds', 0, this.selectedItemIds.length);
-                console.log('topflavon-recipient-picker clear recipients.');
+                console.log('mlm-recipient-picker clear recipients.');
             },
             itemsAddedOrRemoved: function (splice) {
                 if (splice === undefined || splice === null)
                     return;
-                console.log('topflavon-recipient-picker change recipients: ' + JSON.stringify(this.selectedItemIds));
+                console.log('mlm-recipient-picker change recipients: ' + JSON.stringify(this.selectedItemIds));
                 var recipientslabel = '';
                 if (this.items !== undefined && this.items !== null) {
                     this.items.forEach(function (item, index) {
@@ -368,7 +368,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 //            itemsAddedOrRemoved: function (splice) {
 //                if (splice === undefined || splice === null)
 //                    return;
-//                console.log('topflavon-recipient-picker change recipients: ' + JSON.stringify(this.selectedItemIds));
+//                console.log('mlm-recipient-picker change recipients: ' + JSON.stringify(this.selectedItemIds));
 //                var recipientsString = '';
 //                if (this.items !== undefined && this.items !== null) {
 //                    this.items.forEach(function (item, index) {
