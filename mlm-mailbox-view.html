@@ -15,6 +15,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../plutonium-elements/plutonium-widget-behavior.html">
 <link rel="import" href="mlm-shared-styles.html">
 
+<!--
+`<mlm-mailbox-view>` Mailbox page of the application.
+
+In typical use, just slap some `<mlm-mailbox-view>` at the top of your body:
+
+    <body>
+      <mlm-mailbox-view></mlm-mailbox-view>
+
+Wham! It's all awesome now!
+
+    @group Mlm Elements
+    @demo demo/mlm-mailbox-view-index.html
+-->
 <dom-module id="mlm-mailbox-view">
 
     <template>
@@ -25,11 +38,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 position: relative;
                 @apply(--layout-vertical);
             }
-            
+
             :host paper-fab {
-                position: static;
+                position: absolute;
                 bottom: 50px;
-                left: 30px;
+                right: 30px;
             }
 
         </style>
@@ -106,10 +119,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 console.log(this.is + ' fetch ' + selectedMailBoxFolder + ' from ' + accountId + '\'s mailbox.');
                 this.$.mailBoxAjax.generateRequest();
             },
-            isOutbox: function(selectedMailBoxFolder) {
+            isOutbox: function (selectedMailBoxFolder) {
                 return selectedMailBoxFolder === 'outbox';
             },
-            isInbox: function(selectedMailBoxFolder) {
+            isInbox: function (selectedMailBoxFolder) {
                 return selectedMailBoxFolder === 'inbox';
             },
             isEmpty: function (data) {
