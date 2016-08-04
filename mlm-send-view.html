@@ -22,19 +22,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../plutonium-manageable-content/plutonium-manageable-content.html">
 
 <!--
-`<mlm-share-view>` Share page of the application.
+`<mlm-send-view>` Send page of the application.
 
-In typical use, just slap some `<mlm-share-view>` at the top of your body:
+In typical use, just slap some `<mlm-send-view>` at the top of your body:
 
     <body>
-      <mlm-share-view></mlm-share-view>
+      <mlm-send-view></mlm-send-view>
 
 Wham! It's all awesome now!
 
     @group Mlm Elements
-    @demo demo/mlm-share-view-index.html
+    @demo demo/mlm-send-view-index.html
 -->
-<dom-module id="mlm-share-view">
+<dom-module id="mlm-send-view">
 
     <template>
 
@@ -78,121 +78,37 @@ Wham! It's all awesome now!
             on-error="onMessageSendError"
             url="[[apiUrl]]/mailbox/[[accountId]]/send" 
             body="{{shareModel}}"></iron-ajax>
-        <!--<iron-pages selected="{{selectedMetaAction}}" attr-for-selected="name">-->
-        <!--            <paper-card elevation="1" name="share" heading="Share with others" class="layout vertical main-action-fab-container">
-                        <div class="card-content layout horizontal">
-                            <div class="flex layout vertical">
-                                <div class="layout horizontal">
-                                    <paper-input-container id="recipientsInput" class="flex" always-float-label="true">
-                                        <label>Recipients</label>
-                                        <div class="paper-input-input layout horizontal wrap">
-                                            <template is="dom-repeat" items="[[selectedItemIds]]">
-                                                <paper-chip member="[[item]]" style="margin-right: 10px; background-color: white; z-index: 2000;" removable>
-                                                    TODO: #45
-                                                    <div class="icon">[[getRoleIcon(item)]]</div>
-                                                    <h1>[[getUserName(item)]]</h1>
-                                                    <h2>[[getUserEmail(item)]]</h2>
-                                                </paper-chip>
-                                            </template>
-                                        </div>
-                                    </paper-input-container>
-        
-                                    <paper-input label="Recipients" class="flex" name="recipients" value="{{_recipients}}"></paper-input>
-                                    <paper-icon-button icon="supervisor-account" title="Choose contacts." on-tap="onOpenRecipientsDialog"></paper-icon-button>
-                                    <paper-icon-button icon="clear" title="Clear recipients input." on-tap="onClearRecipients"></paper-icon-button>
-                                </div>
-                                <paper-input id="messageInput" class="bottom title" label="Message" value="{{message}}"></paper-input>
-                            </div>
-                        </div>
-        
-                    </paper-card>-->
-
-        <div name="content">
-            <paper-card id="propertiesCardTitle" elevation="1" heading="Properties"  name="props" class="layout vertical main-action-fab-container">
-
-
+        <paper-card elevation="1" name="share" heading="Share with others" class="layout vertical main-action-fab-container">
                 <div class="card-content layout horizontal">
-                    <div class="layout vertical flex">
-                        <paper-dropdown-menu 
-                            id="parentDdLabel"
-                            label="Parent">
-                            <paper-listbox id="parentCandidatesList"
-                                           class="dropdown-content"
-                                           attr-for-selected="{{attrForSelected}}"
-                                           items="[[parentCandidates]]"
-                                           as="parent"
-                                           selected="{{selectedParent}}">
-                                <template is="dom-repeat" items="[[parentCandidates]]">
+                    <div class="flex layout vertical">
+                        <div class="layout horizontal">
+                            <paper-input-container id="recipientsInput" class="flex" always-float-label="true">
+                                <label>Recipients</label>
+                                <div class="paper-input-input layout horizontal wrap">
+                                    <template is="dom-repeat" items="[[selectedItemIds]]">
+                                        <paper-chip member="[[item]]" style="margin-right: 10px; background-color: white; z-index: 2000;" removable>
+                                            <!--TODO: #45-->
+                                            <!--<div class="icon">[[getRoleIcon(item)]]</div>-->
+                                            <h1>[[getUserName(item)]]</h1>
+                                            <h2>[[getUserEmail(item)]]</h2>
+                                        </paper-chip>
+                                    </template>
+                                </div>
+                            </paper-input-container>
 
-                                    <paper-item id="[[item.id]]" class="item pad">
-                                        <label>[[item.title]]</label> 
-                                    </paper-item>
-                                </template>
-                            </paper-listbox>
-                        </paper-dropdown-menu>
-                        <paper-input id="contentTitleInput" class="bottom title" label="Title" value="{{contentModel.title}}"></paper-input>
-                        <paper-checkbox id="draftIndicator" checked="{{contentModel.draft}}">Draft</paper-checkbox>
+                            <!--<paper-input label="Recipients" class="flex" name="recipients" value="{{_recipients}}"></paper-input>-->
+                            <paper-icon-button icon="supervisor-account" title="Choose contacts." on-tap="onOpenRecipientsDialog"></paper-icon-button>
+                            <paper-icon-button icon="clear" title="Clear recipients input." on-tap="onClearRecipients"></paper-icon-button>
+                        </div>
+                        <paper-input id="messageInput" class="bottom title" label="Message" value="{{message}}"></paper-input>
                     </div>
                 </div>
-                <paper-toolbar>
 
-                    <paper-tabs attr-for-selected="name" selected="{{articleContentType}}" style="width: 100%;" autoselect>
-                        <paper-tab text-id="embbeddedContentTabLabel" name="embedded">Embed content</paper-tab>
-                        <paper-tab text-id="assembledContentTabLabel" name="assembled">Assembled content</paper-tab>
-                    </paper-tabs>
-                </paper-toolbar>
             </paper-card>
 
-            <!--<paper-card id="articleContentCard" heading="{{articleContentHeading}}" elevation="1" class="layout vertical">-->
-            <div id="articleContentCard" heading="{{articleContentHeading}}" elevation="1" class="layout vertical">
-
-
-
-
-                <!--Selectexitemids: [[selectedItemIds.length]]-->
-
-
-
-                <iron-pages selected="{{articleContentType}}" attr-for-selected="name">
-
-                    <div name="assembled" class="card-content layout horizontal" style="padding-top: 10px;">
-                        <plutonium-article-form  
-                            class="flex"
-                            api-url="{{apiUrl}}"
-                            id="pcf"
-                            editable
-                            contacts="{{contacts}}" 
-                            content-model="{{contentModel}}"
-                            parent-candidates="{{parentCandidates}}"
-                            editors="[[editorMap]]">
-                        </plutonium-article-form>
-                    </div>
-
-                    <div name="embedded" class="card-content layout horizontal">
-                        <file-upload 
-                            id="uploadFileText"
-                            drop-text="Drop any PDF file here."
-                            error-text="File upload failed."
-                            droppable="true" 
-                            raised="true" 
-                            multi="false" 
-                            method="POST"
-                            target="{{fileUploadTarget}}">Choose File</file-upload>
-                        <div class="flex"></div>
-                    </div>
-                </iron-pages>
-            </div>
-
-        </div>
-
-
-        <!--</iron-pages>-->
 
         <div class="floating-action-bar layout horizontal wrap">
-            <!--<paper-fab class="minor-action-fab" icon="send" on-tap="onSendMessage" title="Publish content" id="sendMessageFab"></paper-fab>-->
-            <paper-fab class="minor-action-fab" icon="save" on-tap="onShare" title="Publish content" id="sendMessageFab"></paper-fab>
-            <paper-fab class="minor-action-fab" icon="clear" on-tap="onClear" title="Cancel all changes & create new article." id="sendNewContentFab"></paper-fab>
-
+            <paper-fab class="minor-action-fab" icon="send" on-tap="onSendMessage" title="Publish content" id="sendMessageFab"></paper-fab>
         </div>
 
     </template>
@@ -200,7 +116,7 @@ Wham! It's all awesome now!
     <script>
 
         Polymer({
-            is: 'mlm-share-view',
+            is: 'mlm-send-view',
             behaviors: [
                 PlutoniumBehaviors.WidgetBehavior
             ],
@@ -267,9 +183,10 @@ Wham! It's all awesome now!
 //                this.pageDto = {
 //                };
 //            },
-            onClear: function () {
-
+            onClear: function() {
+                
             },
+
             onShare: function (e, details) {
                 console.log('Save content: ' + JSON.stringify(this.contentModel));
                 this.contentModel.leaf = true;
@@ -333,6 +250,10 @@ Wham! It's all awesome now!
             onOnlySaveContent: function (event, detail) {
                 console.log('Save content.');
             },
+           
+            /**
+             * Submit the message.
+             */
             onSendMessage: function (event, detail) {
                 this.shareModel.recipients = this.selectedItemIds;
                 this.shareModel.message = this.message;
@@ -384,7 +305,8 @@ Wham! It's all awesome now!
                     }, this);
                     return name;
                 }
-            }
+            },
+            
 //            itemsAddedOrRemoved: function (splice) {
 //                if (splice === undefined || splice === null)
 //                    return;
