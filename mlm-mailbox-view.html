@@ -12,6 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../paper-fab/paper-fab.html">
 <link rel="import" href="../paper-card/paper-card.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../plutonium-elements/plutonium-widget-behavior.html">
 <link rel="import" href="mlm-shared-styles.html">
 
@@ -32,18 +33,13 @@ Wham! It's all awesome now!
 
     <template>
 
-        <style include="mlm-shared-styles">
+        <style include="mlm-shared-styles iron-flex iron-flex-alignment">
             :host {
                 display: block;
-                position: relative;
                 @apply(--layout-vertical);
             }
 
-            :host paper-fab {
-                position: absolute;
-                bottom: 50px;
-                right: 30px;
-            }
+            
 
         </style>
 
@@ -80,8 +76,9 @@ Wham! It's all awesome now!
             </div>
         </paper-card>
         <!--</template>-->
-
-        <paper-fab icon="icons:add"></paper-fab>
+        <div class="floating-action-bar layout horizontal wrap">
+            <paper-fab icon="icons:add" on-tap="onNewMessage"></paper-fab>
+        </div>
     </template>
 
     <script>
@@ -109,6 +106,9 @@ Wham! It's all awesome now!
             observers: [
                 'computeMailboxFolderRequest(accountId, selectedMailBoxFolder)'
             ],
+            /**
+             * Polymer ready.
+             */
             ready: function () {
                 console.log(this.is + ' is ready.');
             },
@@ -127,6 +127,20 @@ Wham! It's all awesome now!
             },
             isEmpty: function (data) {
                 return data === undefined || data === null || data.length === 0;
+            },
+            /**
+             * Fired when the create new message floating-action-button pushed.
+             *
+             * @event new-message
+             */
+
+            /**
+             * New message tap handler.
+             */
+            onNewMessage: function () {
+                this.fire('new-message', {
+                    bubbles: false
+                });
             }
         });
 

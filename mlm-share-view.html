@@ -40,19 +40,19 @@ Wham! It's all awesome now!
 
         <style include="mlm-shared-styles">
 
-            .main-action-fab-container {
-                position: relative;
-            }
-            paper-fab.main-action-fab {
-                position: absolute;
-                bottom: -45px;
-                right: 0px;
-            }
-            paper-fab.minor-action-fab {
-                position: absolute;
-                top: -65px;
-                right: 0px;
-            }
+            /*            .main-action-fab-container {
+                            position: relative;
+                        }
+                        paper-fab.main-action-fab {
+                            position: absolute;
+                            bottom: -45px;
+                            right: 0px;
+                        }
+                        paper-fab.minor-action-fab {
+                            position: absolute;
+                            top: -65px;
+                            right: 0px;
+                        }*/
         </style>
 
         <iron-ajax 
@@ -81,7 +81,6 @@ Wham! It's all awesome now!
         <iron-pages selected="{{selectedMetaAction}}" attr-for-selected="name">
             <paper-card elevation="1" name="share" heading="Share with others" class="layout vertical main-action-fab-container">
                 <div class="card-content layout horizontal">
-                    <paper-fab class="minor-action-fab" icon="send" on-tap="onSendMessage" title="Publish content" id="sendMessageFab"></paper-fab>
                     <div class="flex layout vertical">
                         <div class="layout horizontal">
                             <paper-input-container id="recipientsInput" class="flex" always-float-label="true">
@@ -113,7 +112,6 @@ Wham! It's all awesome now!
 
 
                     <div class="card-content layout horizontal">
-                        <paper-fab class="minor-action-fab" icon="save" on-tap="onShare" title="Publish content" id="sendMessageFab"></paper-fab>
                         <div class="layout vertical flex">
                             <paper-dropdown-menu 
                                 id="parentDdLabel"
@@ -142,7 +140,6 @@ Wham! It's all awesome now!
 
 
                     <paper-toolbar>
-                        <paper-fab class="minor-action-fab" icon="clear" on-tap="onNewArticle" title="Cancel all changes & create new article." id="sendNewContentFab"></paper-fab>
 
                         <paper-tabs attr-for-selected="name" selected="{{articleContentType}}" style="width: 100%;" autoselect>
                             <paper-tab text-id="embbeddedContentTabLabel" name="embedded">Embed content</paper-tab>
@@ -190,6 +187,13 @@ Wham! It's all awesome now!
 
 
         </iron-pages>
+
+        <div class="floating-action-bar layout horizontal wrap">
+            <!--<paper-fab class="minor-action-fab" icon="send" on-tap="onSendMessage" title="Publish content" id="sendMessageFab"></paper-fab>-->
+            <paper-fab class="minor-action-fab" icon="save" on-tap="onShare" title="Publish content" id="sendMessageFab"></paper-fab>
+            <paper-fab class="minor-action-fab" icon="clear" on-tap="onClear" title="Cancel all changes & create new article." id="sendNewContentFab"></paper-fab>
+
+        </div>
 
     </template>
 
@@ -263,6 +267,10 @@ Wham! It's all awesome now!
 //                this.pageDto = {
 //                };
 //            },
+            onClear: function() {
+                
+            },
+
             onShare: function (e, details) {
                 console.log('Save content: ' + JSON.stringify(this.contentModel));
                 this.contentModel.leaf = true;
@@ -316,9 +324,9 @@ Wham! It's all awesome now!
                 }
                 this.recipients = recipientslabel;
             },
-            onRemoveItem: function(event, detail) {
+            onRemoveItem: function (event, detail) {
                 event.stopPropagation();
-                this.splice('selectedItemIds', this.selectedItemIds.indexOf(event.currentTarget.member), 1); 
+                this.splice('selectedItemIds', this.selectedItemIds.indexOf(event.currentTarget.member), 1);
             },
             computeHeader: function (articleContentHeading) {
                 return ('assembled' === articleContentHeading) ? 'Edit content' : 'Attach file';

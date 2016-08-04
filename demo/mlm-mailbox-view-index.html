@@ -1,29 +1,38 @@
 <!doctype html>
 <html>
-  <head>
-    <title>mlm-mailbox-view demo</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <head>
+        <title>mlm-mailbox-view demo</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+        <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+        <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
 
-    <link rel="import" href="../mlm-elements-all.html">
+        <link rel="import" href="../mlm-elements-all.html">
 
-    <style is="custom-style" include="demo-pages-shared-styles">
-    </style>
-  </head>
-  <body>
+        <style is="custom-style" include="demo-pages-shared-styles">
+        </style>
+    </head>
+    <body>
 
-    <div class="vertical-section-container centered">
-      <h3>Basic mlm-mailbox-view Demo</h3>
-      <demo-snippet>
-        <template>
-          <mlm-elements></mlm-elements>
-        </template>
-      </demo-snippet>
-    </div>
+        <div class="vertical-section-container centered">
+            <h3>Basic mlm-mailbox-view Demo</h3>
+            <demo-snippet>
+                <template>
+                    <mlm-mailbox-view id="view"></mlm-mailbox-view>
 
-  </body>
+                    <script>
+                        document.querySelector('#view').addEventListener('new-message', function (event) {
+                            alert('New message event fired.');
+                        });
+                    </script>
+                </template>
+
+
+            </demo-snippet>
+        </div>
+
+
+    </body>
 </html>

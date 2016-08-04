@@ -79,6 +79,14 @@ Wham! It's all awesome now!
             </div>
         </paper-card>
 
+        <div class="floating-action-bar layout horizontal wrap">
+            <paper-fab icon="icons:add" on-tap="onNewMember"></paper-fab>
+            <paper-fab icon="icons:remove" on-tap="onDeleteMember"></paper-fab>
+            <paper-fab icon="icons:send" on-tap="onSendToMember"></paper-fab>
+            <paper-fab icon="icons:star" on-tap="onPromoteMember"></paper-fab>
+            <paper-fab icon="icons:star-border" on-tap="onDemoteMember"></paper-fab>
+        </div>
+
     </template>
 
     <script>
@@ -207,9 +215,69 @@ Wham! It's all awesome now!
                 this.$.childrenIronAjax.generateRequest();
                 this.$.genocideIronAjax.generateRequest();
             },
-//            onCreateMember: function () {
-//                this.$.newMemberForm.submit();
-//            },
+            /**
+             * Fired when the create new member floating-action-button pushed.
+             *
+             * @event new-member
+             */
+
+            /**
+             * New member tap handler.
+             */
+            onNewMember: function () {
+                this.fire('new-member');
+            },
+            /**
+             * Fired when the delete member floating-action-button pushed.
+             *
+             * @event delete-member
+             */
+
+            /**
+             * Delete member tap handler.
+             */
+            onDeleteMember: function () {
+                this.fire('delete-member');
+            },
+            /**
+             * Fired when the send-to-member floating-action-button pushed.
+             *
+             * @event send-to-member
+             */
+
+            /**
+             * Send to member tap handler.
+             */
+            onSendToMember: function () {
+                this.fire('send-to-member');
+            },
+            
+            
+            /**
+             * Fired when the promote-member floating-action-button pushed.
+             *
+             * @event promote-member
+             */
+
+            /**
+             * Promote-member tap handler.
+             */
+            onPromoteMember: function () {
+                this.fire('promote-member');
+            },
+            /**
+             * Fired when the demote-member floating-action-button pushed.
+             *
+             * @event demote-member
+             */
+
+            /**
+             * Demote-member tap handler.
+             */
+            onDemoteMember: function () {
+                this.fire('demote-member');
+            },
+            
 //            onCreateMemberRepeat: function () {
 //                this.$.newMemberForm.submit();
 //                this.$.newMemberForm.email.value = '';
