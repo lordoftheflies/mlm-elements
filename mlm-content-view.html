@@ -70,7 +70,7 @@ Wham! It's all awesome now!
                    on-error="onContentError" 
                    last-response="{{contentChildrenModel}}" 
                    auto></iron-ajax>
-        
+
         <iron-ajax id="publisherAjax" 
                    url="[[apiUrl]]/content-management/publish" 
                    handle-as="json" 
@@ -136,261 +136,274 @@ Wham! It's all awesome now!
         </template>
 
         <!--<template is="dom-if" if="{{!isEmpty(data.sections)}}">-->
-
+        <div class="floating-action-bar layout horizontal wrap">
+            <paper-fab icon="icons:add" on-tap="onNewContent"></paper-fab>
+        </div>
     </template>
 
 
-
-</template>
-
-<script>
-    'use strict';
-    Polymer({
-        is: 'mlm-content-view',
-        behaviors: [
-            PlutoniumBehaviors.WidgetBehavior
-        ],
-        properties: {
-            tocRequestParams: {
-                type: Object,
-                notify: true,
-                value: {
-                    pageId: 'ROOT'
+    <script>
+        'use strict';
+        Polymer({
+            is: 'mlm-content-view',
+            behaviors: [
+                PlutoniumBehaviors.WidgetBehavior
+            ],
+            properties: {
+                tocRequestParams: {
+                    type: Object,
+                    notify: true,
+                    value: {
+                        pageId: 'ROOT'
+                    }
+                },
+                infoRequestParams: {
+                    type: Object,
+                    notify: true,
+                    value: {
+                        pageId: 'ROOT'
+                    }
+                },
+                renderBreadCrumbs: {
+                    type: Boolean,
+                    notify: true,
+                    value: false
+                },
+                selectedContentFolder: {
+                    type: String,
+                    notify: true,
+                    value: 'public',
+                    //                observer: 'observeSelectedContentFolder'
+                },
+                selectedArticleId: {
+                    type: String,
+                    notify: true,
+                    //                observer: 'observeSelectedArticleId'
+                },
+                ownerId: {
+                    type: String,
+                    notify: true
+                },
+                baseUrl: {
+                    type: String,
+                    notify: true
+                },
+                rootModel: {
+                    type: Object,
+                    notify: true
+                },
+                parentModel: {
+                    type: Object,
+                    notify: true
+                },
+                contentChildrenModel: {
+                    type: Object,
+                    notify: true
+                },
+                contentRootUrl: {
+                    type: String,
+                    notify: true,
+                    value: 'http://localhost/topn_data/'
                 }
             },
-            infoRequestParams: {
-                type: Object,
-                notify: true,
-                value: {
-                    pageId: 'ROOT'
+            observers: [
+                //            'observeOwnerId(ownerId)',
+                //            'observeSelectedArticleId(selectedArticleId)',
+                'observeSelectedContentFolder(selectedContentFolder)',
+                'observeCurrentArticle(selectedArticleId, selectedContentFolder, ownerId)',
+                'observeContentChildrenModel(contentChildrenModel)'
+                        //            'computeTocRequestParams(selectedArticleId, selectedContentFolder, ownerId)',
+                        //                    'computeTitle(data.title)'
+            ],
+            ready: function () {
+                console.log(this.is + ' is ready.');
+            },
+            observeCurrentArticle: function (selectedArticleId, selectedContentFolder, ownerId) {
+                this.tocRequestParams.pageId = selectedArticleId;
+                this.tocRequestParams.tag = selectedContentFolder;
+                this.tocRequestParams.owner = ownerId;
+
+                this.infoRequestParams.pageId = selectedArticleId;
+
+                console.log(this.is + ' toc navigation request parameters updated: ' + JSON.stringify(this.tocRequestParams))
+                //            if (this.contentChildrenModel !== undefined && this.contentChildrenModel.sections !== undefined)
+                //                this.splice('contentChildrenModel.sections', 0, this.contentChildrenModel.sections.length);
+                this.$.rootModelAjax.generateRequest();
+                this.$.childTocAjax.generateRequest();
+                this.$.parentTocAjax.generateRequest();
+            },
+            observeContentChildrenModel: function () {
+                var list = document.querySelector('iron-list')
+                if (list)
+                    list.fire('iron-resize');
+            },
+            //        computeTocRequestParams: function (selectedRootId, selectedContentFolder, accountId) {
+            //            this.tocRequestParams.pageId = selectedRootId;
+            //            this.tocRequestParams.tag = selectedContentFolder;
+            //            this.tocRequestParams.owner = accountId;
+            //
+            //            this.infoRequestParams.pageId = selectedRootId;
+            //
+            //            console.log(this.is + ' toc navigation request parameters updated: ' + JSON.stringify(this.tocRequestParams))
+            //            if (this.contentChildrenModel !== undefined && this.contentChildrenModel.sections !== undefined)
+            //                this.splice('contentChildrenModel.sections', 0, this.contentChildrenModel.sections.length);
+            //            this.$.rootModelAjax.generateRequest();
+            //            this.$.childTocAjax.generateRequest();
+            //            this.$.parentTocAjax.generateRequest();
+            //        },
+            observeSelectedContentFolder: function (folder) {
+                if (this.tocRequestParams) {
+                    console.log(this.is + ' observe selected content folder: ' + folder);
+                    this.tocRequestParams.tag = folder;
+                    this.tocRequestParams.pageId = this.selectedArticleId = 'ROOT';
+                    //
+                    //                this.$.rootModelAjax.generateRequest();
+                    //                this.$.childTocAjax.generateRequest();
+                    //                this.$.parentTocAjax.generateRequest();
+                }
+                ////            this.tocRequestParams.owner = this.accountId;
+
+            },
+            observeOwnerId: function (ownerId) {
+                ////            this.tocRequestParams.tag = this.selectedContentFolder;
+                if (this.tocRequestParams) {
+                    console.log(this.is + ' observe as owner: ' + ownerId);
+                    //                this.tocRequestParams.owner = ownerId;
+                    //
+                    //                this.$.rootModelAjax.generateRequest();
+                    //                this.$.childTocAjax.generateRequest();
+                    //                this.$.parentTocAjax.generateRequest();
+                }
+
+            },
+            observeSelectedArticleId: function (selectedArticleId) {
+                if (this.tocRequestParams) {
+                    console.log(this.is + ' selected article: ' + selectedArticleId);
                 }
             },
-            renderBreadCrumbs: {
-                type: Boolean,
-                notify: true,
-                value: false
+            observeAccountId: function (accountId) {
+                ////            this.tocRequestParams.tag = this.selectedContentFolder;
+                //            if (this.tocRequestParams) {
+                //                console.log(this.is + ' observe selected account: ' + accountId);
+                ////                this.tocRequestParams.owner = accountId;
+                ////
+                ////                this.$.rootModelAjax.generateRequest();
+                ////                this.$.childTocAjax.generateRequest();
+                ////                this.$.parentTocAjax.generateRequest();
+                //            }
+
             },
-            selectedContentFolder: {
-                type: String,
-                notify: true,
-                value: 'public',
-//                observer: 'observeSelectedContentFolder'
+            getItemClasses: function (item) {
+                return item.tags.join(" ");
             },
-            selectedArticleId: {
-                type: String,
-                notify: true,
-//                observer: 'observeSelectedArticleId'
+            isLeaf: function (item) {
+                console.log(item.sections.length);
+                return item.sections.length === 0;
             },
-            ownerId: {
-                type: String,
-                notify: true
+            isFork: function (item) {
+                return item.sections.length > 0;
             },
-            baseUrl: {
-                type: String,
-                notify: true
+            isEmpty: function (data) {
+                return (data === undefined || data === null || data.sections === undefined || data.sections === null || data.sections.length === 0);
             },
-            rootModel: {
-                type: Object,
-                notify: true
+            getContentFileUrl: function (fileName) {
+                return this.contentRootUrl + fileName;
             },
-            parentModel: {
-                type: Object,
-                notify: true
+            isDraftSelected: function (selectedContentFolder) {
+                return selectedContentFolder === 'drafts';
             },
-            contentChildrenModel: {
-                type: Object,
-                notify: true
+            onEditArticle: function (event, detail) {
+                event.stopPropagation();
+                this.fire('edit-content', {
+                    articleId: event.currentTarget.name
+                });
             },
-            contentRootUrl: {
-                type: String,
-                notify: true,
-                value: 'http://localhost/topn_data/'
+            onRemoveArticle: function () {
+
+            },
+            //                computeTitle: function (data) {
+            //                    this.title = data.title;
+            //                },
+            //        onNavigate: function (event, details) {
+            //            page.redirect(app.baseUrl + '/content-tree/' + details.sourceEvent.currentTarget.href);
+            //        },
+            onContentResponse: function () {
+                console.log('Content fetched for ' + this.selectedArticleId);
+            },
+            onContentError: function () {
+                console.log('Content fetching failed for ' + this.selectedArticleId);
+            },
+            onParentTocResponse: function () {
+                console.log('Toc-Content-View parent path success response (' + this.selectedArticleId + ').');
+                //                this.renderBreadCrumbs = true;
+            },
+            onParentTocError: function () {
+                console.log('Toc-Content-View parent path failed to respond (' + this.selectedArticleId + ').');
+                this.selectedContentFolder = 'public';
+                //                this.renderBreadCrumbs = true;
+            },
+            onPublishResponse: function () {
+                this.fire('feedback', {
+                    message: 'Message published succesfully.'
+                });
+            },
+            onPublishError: function () {
+                this.fire('feedback', {
+                    message: 'Message publishing failed.'
+                });
+            },
+            onUnpublishResponse: function () {
+                this.fire('feedback', {
+                    message: 'Message unpublished succesfully.'
+                });
+            },
+            onUnpublishError: function () {
+                this.fire('feedback', {
+                    message: 'Message publishing failed.'
+                });
+            },
+            getLink: function (item) {
+                //            return '/content-tree/' + item.name;
+                return '/content-tree/' + item.hasEmbeddedFile ? item.data : item.name;
+            },
+            onNavigate: function (event, detail) {
+                this.selectedArticleId = event.currentTarget.name;
+            },
+            onDeleteArticle: function (event, detail) {
+                alert('Not implemented yet.');
+            },
+            onPublishArticle: function (event, detail) {
+                event.stopPropagation();
+                this.publisherModel = {
+                    owner: this.ownerId,
+                    article: event.currentTarget.name
+                };
+                this.$.publisherAjax.generateRequest()
+            },
+            onUnpublishArticle: function (event, detail) {
+                event.stopPropagation();
+                this.publisherModel = {
+                    owner: this.ownerId,
+                    article: event.currentTarget.name
+                };
+                this.$.unpublisherAjax.generateRequest()
+            },
+            /**
+             * Fired when the create new content floating-action-button pushed.
+             *
+             * @event new-content
+             */
+
+            /**
+             * New-content tap handler.
+             */
+            onNewContent: function () {
+                this.fire('new-content', {
+                    bubbles: false
+                });
             }
-        },
-        observers: [
-//            'observeOwnerId(ownerId)',
-//            'observeSelectedArticleId(selectedArticleId)',
-            'observeSelectedContentFolder(selectedContentFolder)',
-            'observeCurrentArticle(selectedArticleId, selectedContentFolder, ownerId)',
-            'observeContentChildrenModel(contentChildrenModel)'
-//            'computeTocRequestParams(selectedArticleId, selectedContentFolder, ownerId)',
-//                    'computeTitle(data.title)'
-        ],
-        ready: function () {
-            console.log(this.is + ' is ready.');
-        },
-        observeCurrentArticle: function (selectedArticleId, selectedContentFolder, ownerId) {
-            this.tocRequestParams.pageId = selectedArticleId;
-            this.tocRequestParams.tag = selectedContentFolder;
-            this.tocRequestParams.owner = ownerId;
+        });
 
-            this.infoRequestParams.pageId = selectedArticleId;
-
-            console.log(this.is + ' toc navigation request parameters updated: ' + JSON.stringify(this.tocRequestParams))
-//            if (this.contentChildrenModel !== undefined && this.contentChildrenModel.sections !== undefined)
-//                this.splice('contentChildrenModel.sections', 0, this.contentChildrenModel.sections.length);
-            this.$.rootModelAjax.generateRequest();
-            this.$.childTocAjax.generateRequest();
-            this.$.parentTocAjax.generateRequest();
-        },
-        observeContentChildrenModel: function () {
-            var list = document.querySelector('iron-list')
-            if (list)
-                list.fire('iron-resize');
-        },
-//        computeTocRequestParams: function (selectedRootId, selectedContentFolder, accountId) {
-//            this.tocRequestParams.pageId = selectedRootId;
-//            this.tocRequestParams.tag = selectedContentFolder;
-//            this.tocRequestParams.owner = accountId;
-//
-//            this.infoRequestParams.pageId = selectedRootId;
-//
-//            console.log(this.is + ' toc navigation request parameters updated: ' + JSON.stringify(this.tocRequestParams))
-//            if (this.contentChildrenModel !== undefined && this.contentChildrenModel.sections !== undefined)
-//                this.splice('contentChildrenModel.sections', 0, this.contentChildrenModel.sections.length);
-//            this.$.rootModelAjax.generateRequest();
-//            this.$.childTocAjax.generateRequest();
-//            this.$.parentTocAjax.generateRequest();
-//        },
-        observeSelectedContentFolder: function (folder) {
-            if (this.tocRequestParams) {
-                console.log(this.is + ' observe selected content folder: ' + folder);
-                this.tocRequestParams.tag = folder;
-                this.tocRequestParams.pageId = this.selectedArticleId = 'ROOT';
-//
-//                this.$.rootModelAjax.generateRequest();
-//                this.$.childTocAjax.generateRequest();
-//                this.$.parentTocAjax.generateRequest();
-            }
-////            this.tocRequestParams.owner = this.accountId;
-
-        },
-        observeOwnerId: function (ownerId) {
-////            this.tocRequestParams.tag = this.selectedContentFolder;
-            if (this.tocRequestParams) {
-                console.log(this.is + ' observe as owner: ' + ownerId);
-//                this.tocRequestParams.owner = ownerId;
-//
-//                this.$.rootModelAjax.generateRequest();
-//                this.$.childTocAjax.generateRequest();
-//                this.$.parentTocAjax.generateRequest();
-            }
-
-        },
-        observeSelectedArticleId: function (selectedArticleId) {
-            if (this.tocRequestParams) {
-                console.log(this.is + ' selected article: ' + selectedArticleId);
-            }
-        },
-        observeAccountId: function (accountId) {
-////            this.tocRequestParams.tag = this.selectedContentFolder;
-//            if (this.tocRequestParams) {
-//                console.log(this.is + ' observe selected account: ' + accountId);
-////                this.tocRequestParams.owner = accountId;
-////
-////                this.$.rootModelAjax.generateRequest();
-////                this.$.childTocAjax.generateRequest();
-////                this.$.parentTocAjax.generateRequest();
-//            }
-
-        },
-        getItemClasses: function (item) {
-            return item.tags.join(" ");
-        },
-        isLeaf: function (item) {
-            console.log(item.sections.length);
-            return item.sections.length === 0;
-        },
-        isFork: function (item) {
-            return item.sections.length > 0;
-        },
-        isEmpty: function (data) {
-            return (data === undefined || data === null || data.sections === undefined || data.sections === null || data.sections.length === 0);
-        },
-        getContentFileUrl: function (fileName) {
-            return this.contentRootUrl + fileName;
-        },
-        isDraftSelected: function (selectedContentFolder) {
-            return selectedContentFolder === 'drafts';
-        },
-        onEditArticle: function (event, detail) {
-            event.stopPropagation();
-            this.fire('edit-content', {
-                articleId: event.currentTarget.name
-            });
-        },
-        onRemoveArticle: function () {
-
-        },
-//                computeTitle: function (data) {
-//                    this.title = data.title;
-//                },
-//        onNavigate: function (event, details) {
-//            page.redirect(app.baseUrl + '/content-tree/' + details.sourceEvent.currentTarget.href);
-//        },
-        onContentResponse: function () {
-            console.log('Content fetched for ' + this.selectedArticleId);
-        },
-        onContentError: function () {
-            console.log('Content fetching failed for ' + this.selectedArticleId);
-        },
-        onParentTocResponse: function () {
-            console.log('Toc-Content-View parent path success response (' + this.selectedArticleId + ').');
-            //                this.renderBreadCrumbs = true;
-        },
-        onParentTocError: function () {
-            console.log('Toc-Content-View parent path failed to respond (' + this.selectedArticleId + ').');
-            this.selectedContentFolder = 'public';
-            //                this.renderBreadCrumbs = true;
-        },
-        onPublishResponse: function() {
-            this.fire('feedback', {
-                message: 'Message published succesfully.'
-            });
-        },
-        onPublishError: function() {
-            this.fire('feedback', {
-                message: 'Message publishing failed.'
-            });
-        },
-        onUnpublishResponse: function() {
-            this.fire('feedback', {
-                message: 'Message unpublished succesfully.'
-            });
-        },
-        onUnpublishError: function() {
-            this.fire('feedback', {
-                message: 'Message publishing failed.'
-            });
-        },
-        getLink: function (item) {
-//            return '/content-tree/' + item.name;
-            return '/content-tree/' + item.hasEmbeddedFile ? item.data : item.name;
-        },
-        onNavigate: function(event, detail) {
-            this.selectedArticleId = event.currentTarget.name;
-        },
-        onDeleteArticle: function(event, detail) {
-            alert('Not implemented yet.');
-        },
-        onPublishArticle: function(event, detail) {
-            event.stopPropagation();
-            this.publisherModel = {
-                owner: this.ownerId,
-                article: event.currentTarget.name
-            };
-            this.$.publisherAjax.generateRequest()
-        },
-        onUnpublishArticle: function(event, detail) {
-            event.stopPropagation();
-            this.publisherModel = {
-                owner: this.ownerId,
-                article: event.currentTarget.name
-            };
-            this.$.unpublisherAjax.generateRequest()
-        }
-    });
-
-</script>
+    </script>
 
 </dom-module>
