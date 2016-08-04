@@ -18,7 +18,11 @@
     "iron-dropdown": "polymerelements/iron-dropdown#^1.5.1",
     "paper-item": "polymerelements/paper-item#^1.2.1",
     "paper-menu": "polymerelements/paper-menu#^1.2.2",
-    "paper-menu-button": "polymerelements/paper-menu-button#^1.5.0"
+    "paper-menu-button": "polymerelements/paper-menu-button#^1.5.0",
+    "grapp-breadcrumbs": "^0.1.5",
+    "paper-dialog-scrollable": "polymerelements/paper-dialog-scrollable#^1.1.5",
+    "plutonium-authentication": "lordoftheflies/plutonium-authentication#^1.1.1",
+    "app-route": "polymerelements/app-route#^0.9.2"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

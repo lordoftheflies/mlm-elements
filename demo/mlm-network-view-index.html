@@ -18,11 +18,44 @@
 
         <div class="vertical-section-container centered">
             <h3>Basic mlm-network-view Demo</h3>
+            <!--<template is="dom-bind">-->
             <demo-snippet>
                 <template>
-                    <mlm-network-view></mlm-network-view>
-                </template>
+                    <!--<template is="dom-bind">-->
+                        <iron-ajax id="genocideIronAjax" 
+                                   url="/data/addressbook/genocide" 
+                                   params="[[genocideRequestParams]]" 
+                                   last-response="{{parents}}" 
+                                   auto>
+
+                        </iron-ajax>
+                        <iron-ajax id="childrenIronAjax" 
+                                   url="/data/addressbook/children" 
+                                   params="[[childrenRequestParams]]" 
+                                   last-response="{{children}}" 
+                                   auto>
+
+                        </iron-ajax>
+                        [[selectedName]]
+                        [[selectedAccountId]]
+                        [[selectedName]]
+
+                        <mlm-network-view 
+                            id="networkPage"
+                            name="network-view" 
+                            genocide-request-params="[[genocideRequestParams]]"
+                            children-request-params="[[childrenRequestParams]]"
+                            account-id="accountId" 
+                            parents="{{parents}}"
+                            children="{{children}}"
+                            selected-name="{{selectedName}}"
+                            selected-role="{{selectedRole}}"
+                            selected-account-id="{{memberId}}">
+                        </mlm-network-view>
+                    </template>
+                <!--</template>-->
             </demo-snippet>
+            <!--</template>-->
         </div>
 
     </body>

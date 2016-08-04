@@ -45,22 +45,9 @@ Wham! It's all awesome now!
 
         </style>
 
-        <iron-ajax id="genocideIronAjax" 
-                   url="[[apiUrl]]/addressbook/genocide" 
-                   params="[[genocideRequestParams]]" 
-                   last-response="{{parents}}" 
-                   auto>
 
-        </iron-ajax>
-        <iron-ajax id="childrenIronAjax" 
-                   url="[[apiUrl]]/addressbook/children" 
-                   params="[[childrenRequestParams]]" 
-                   last-response="{{data}}" 
-                   auto>
 
-        </iron-ajax>
-
-        <iron-list id="childrenIronList" items="[[data]]" as="item" hidden="[[isEmpty(data)]]" class="layout vertical">
+        <iron-list id="childrenIronList" items="[[children]]" as="item" hidden="[[isEmpty(children)]]" class="layout vertical">
             <template>
                 <paper-item class="layout horizontal">
                     <paper-material class="flex layout horizontal" nodename="[[item.name]]"  nodeid="[[item.id]]" role="[[item.role]]" on-tap="onNavigateToChildren"  tabindex="[[tabIndex]]">
@@ -73,7 +60,7 @@ Wham! It's all awesome now!
             </template>
         </iron-list>
 
-        <paper-card elevation="1" hidden="[[!isEmpty(data)]]">
+        <paper-card elevation="1" hidden="[[!isEmpty(children)]]">
             <div class="card-content">
                 <div id="emptyChildrenText">No children.</div>
             </div>
@@ -81,10 +68,18 @@ Wham! It's all awesome now!
 
         <div class="floating-action-bar layout horizontal wrap">
             <paper-fab icon="icons:add" on-tap="onNewMember"></paper-fab>
-            <paper-fab icon="icons:remove" on-tap="onDeleteMember"></paper-fab>
-            <paper-fab icon="icons:send" on-tap="onSendToMember"></paper-fab>
-            <paper-fab icon="icons:star" on-tap="onPromoteMember"></paper-fab>
-            <paper-fab icon="icons:star-border" on-tap="onDemoteMember"></paper-fab>
+            <template is="dom-if" if$="[[!isMeIndicator]]">
+                <paper-fab icon="icons:remove" on-tap="onDeleteMember"></paper-fab>
+
+                <paper-fab icon="icons:send" on-tap="onSendToMember"></paper-fab>
+                <template is="dom-if" if$="[[isUserIndicator]]">
+                    <paper-fab icon="icons:star" on-tap="onPromoteMember"></paper-fab>
+                </template>
+                <template is="dom-if" if$="[[isAdminIndicator]]">
+                    <paper-fab icon="icons:star-border" on-tap="onDemoteMember"></paper-fab>
+                </template>
+            </template>
+
         </div>
 
     </template>
@@ -98,6 +93,21 @@ Wham! It's all awesome now!
                 PlutoniumBehaviors.AuthorizationBehavior
             ],
             properties: {
+                isMeIndicator: {
+                    type: Boolean,
+//                    notify: true,
+                    computed: 'isMe(selectedAccountId, accountId)'
+                },
+                isUserIndicator: {
+                    type: Boolean,
+                    notify: true,
+                    computed: 'isUser(selectedRole)'
+                },
+                isAdminIndicator: {
+                    type: Boolean,
+//                    notify: true,
+                    computed: 'isAdmin(selectedRole)'
+                },
                 genocideRequestParams: {
                     type: Object,
                     notify: true,
@@ -108,6 +118,11 @@ Wham! It's all awesome now!
                     notify: true,
                     computed: 'computeChildrenRequestParams(selectedAccountId)'
                 },
+                /**
+                 * Account-id of the selected member.
+                 *
+                 * @type {string} 
+                 */
                 selectedAccountId: {
                     type: String,
                     notify: true,
@@ -115,7 +130,8 @@ Wham! It's all awesome now!
                 },
                 selectedRole: {
                     type: String,
-                    notify: true
+                    notify: true,
+                    value: 'USER'
                 },
                 selectedName: {
                     type: String,
@@ -134,7 +150,21 @@ Wham! It's all awesome now!
                     notify: true,
                     value: 'USER'
                 },
+                /**
+                 * List of parent members.
+                 *
+                 * @type {Array<Object>}
+                 */
                 parents: {
+                    type: Array,
+                    notify: true
+                },
+                /**
+                 * List of child-members.
+                 *
+                 * @type {Array<Object>}
+                 */
+                children: {
                     type: Array,
                     notify: true
                 }
@@ -145,12 +175,6 @@ Wham! It's all awesome now!
                 'observeOwnerChange(accountId)'
             ],
             listeners: {
-//                'deleteMemberForm.iron-form-response': 'onDeleteMemberResponse',
-//                'deleteMemberForm.iron-form-error': 'onDeleteMemberError',
-//                'promoteMemberForm.iron-form-response': 'onPromoteMemberResponse',
-//                'promoteMemberForm.iron-form-error': 'onPromoteMemberError',
-//                'demoteMemberForm.iron-form-response': 'onDemoteMemberResponse',
-//                'demoteMemberForm.iron-form-error': 'onDemoteMemberError',
                 'iron-select': 'onSelectMember',
                 'network-tree-refresh': 'onRefresh'
             },
@@ -163,12 +187,16 @@ Wham! It's all awesome now!
             observeChildRequestParams: function (selectedAccountId) {
 //                this.childrenRequestParams.parentId = selectedAccountId;
                 console.log(this.is + ' child request parameters updated: ' + JSON.stringify(this.childrenRequestParams))
-                this.$.childrenIronAjax.generateRequest();
+                this.fire('fetch-data', {
+                    ids: ['childrenIronAjax', 'genocideIronAjax']
+                });
             },
             observeGenocideRequestParams: function (selectedAccountId) {
 //                this.genocideRequestParams.childId = selectedAccountId;
                 console.log(this.is + ' genocide request parameters updated: ' + JSON.stringify(this.genocideRequestParams))
-                this.$.genocideIronAjax.generateRequest();
+                this.fire('fetch-data', {
+                    ids: ['childrenIronAjax', 'genocideIronAjax']
+                });
             },
             computeChildrenRequestParams: function () {
                 return {
@@ -180,14 +208,6 @@ Wham! It's all awesome now!
                     childId: this.selectedAccountId
                 };
             },
-//            computeSelected: function (accountId) {
-//                console.log('Change selected member from ' + this.selectedAccount + ' to ' + accountId);
-//                this.selectedAccount = accountId;
-//                this.childrenRequestParams.parentId = this.selectedAccount;
-//                this.genocideRequestParams.childId = this.selectedAccount;
-////                this.$.childrenIronAjax.generateRequest();
-////                this.$.genocideIronAjax.generateRequest();
-//            },
             onSelectMember: function (event, details) {
                 console.log('Network-view select account:');
                 this.unusedCodes = details.item.unusedcodes;
@@ -204,16 +224,31 @@ Wham! It's all awesome now!
                 console.log('Network-view navigate to children ');
 
             },
+            /**
+             * Fired when data has to be fetched from the backend.
+             *
+             * @event fetch-data
+             * @param {{ ids: Array<string> }}
+             */
+
+            /**
+             * Handle navigate back one member.
+             * @param {type} event
+             * @param {type} details
+             * @returns {undefined}
+             */
             onNavigateUp: function (event, details) {
                 this.accountId = this.$.parentBeadCrumbs.children[this.$.parentBeadCrumbs.children.length < 3 ? 0 : this.$.parentBeadCrumbs.children.length - 3].nodeid;
                 this.selectedAccount = this.accountId;
-                this.$.childrenIronAjax.generateRequest();
-                this.$.genocideIronAjax.generateRequest();
+                this.fire('fetch-data', {
+                    ids: ['childrenIronAjax', 'genocideIronAjax']
+                });
                 console.log('Network-view navigate to children ');
             },
             onRefresh: function () {
-                this.$.childrenIronAjax.generateRequest();
-                this.$.genocideIronAjax.generateRequest();
+                this.fire('fetch-data', {
+                    ids: ['childrenIronAjax', 'genocideIronAjax']
+                });
             },
             /**
              * Fired when the create new member floating-action-button pushed.
@@ -251,8 +286,6 @@ Wham! It's all awesome now!
             onSendToMember: function () {
                 this.fire('send-to-member');
             },
-            
-            
             /**
              * Fired when the promote-member floating-action-button pushed.
              *
@@ -277,73 +310,21 @@ Wham! It's all awesome now!
             onDemoteMember: function () {
                 this.fire('demote-member');
             },
-            
-//            onCreateMemberRepeat: function () {
-//                this.$.newMemberForm.submit();
-//                this.$.newMemberForm.email.value = '';
-//                this.$.newMemberForm.role.value = 'USER';
-//                this.$.newMemberForm.name.value = '';
-////                    this.$.newMemberForm.preferredLangiage.value = '';
-//
-////                    this.$.memberDialog.open();
-//            },
-//            onDeleteMemberResponse: function (event, details) {
-//                console.log('Member removed successfully: ' + JSON.stringify(details.response));
-//                this.$.childrenIronAjax.generateRequest();
-//                this.fire('feedback', {
-//                    message: 'Member removed successfully.'
-//                });
-//            },
-//            onDeleteMemberError: function (event, details) {
-//                console.log('Remove-member error: ' + JSON.stringify(details.response));
-//                this.fire('feedback', {
-//                    message: 'Member removing failed.'
-//                });
-//            },
-//            onPromoteMemberResponse: function (event, details) {
-//                console.log('Member promoted successfully: ' + JSON.stringify(details.response));
-//                this.$.childrenIronAjax.generateRequest();
-//                this.fire('feedback', {
-//                    message: 'Member promoted successfully'
-//                });
-//            },
-//            onPromoteMemberError: function (event, details) {
-//                console.log('Promote-member error: ' + JSON.stringify(details.response));
-//                this.fire('feedback', {
-//                    message: 'Member promoting failed.'
-//                });
-//            },
-//            onDemoteMemberResponse: function (event, details) {
-//                console.log('Member demoted successfully: ' + JSON.stringify(details.response));
-//                this.$.childrenIronAjax.generateRequest();
-//                this.fire('feedback', {
-//                    message: 'Member demoted successfully'
-//                });
-//            },
-//            onDemoteMemberError: function (event, details) {
-//                console.log('Demote-member error: ' + JSON.stringify(details.response));
-//                this.fire('feedback', {
-//                    message: 'Member demoting failed.'
-//                });
-//            },
             isEmpty: function (data) {
                 return data === undefined || data === null || data.length === 0;
             },
-//            onDemoteMemberPrompted: function () {
-//                this.$.demoteMemberForm.submit();
-//                console.log('Demote member prompted.');
-//            },
-//            onDeleteMemberPrompted: function () {
-//                this.$.deleteMemberForm.submit();
-//                console.log('Delete member prompted.');
-//            },
-//            onPromoteMemberPrompted: function () {
-//                this.$.promoteMemberForm.submit();
-//                console.log('Promote member prompted.');
-//            },
-//            openNewMember: function () {
-//                this.$.memberDialog.open();
-//            }
+            isMe: function (accountId, token) {
+                return accountId === token;
+            },
+            isGroup: function (data) {
+                return data === 'GROUP';
+            },
+            isAdmin: function (data) {
+                return data === 'ADMIN';
+            },
+            isUser: function (data) {
+                return data === 'USER';
+            }
         });
 
     </script>
