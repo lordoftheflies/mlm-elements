@@ -14,7 +14,11 @@
     "paper-chip": "^1.0.0",
     "plutonium-manageable-content": "lordoftheflies/plutonium-manageable-content#^1.0.5",
     "plutonium-elements": "lordoftheflies/plutonium-elements#^0.5.1",
-    "plutonium-avatar-button": "lordoftheflies/plutonium-avatar-button#^0.0.8"
+    "plutonium-avatar-button": "lordoftheflies/plutonium-avatar-button#^0.0.8",
+    "iron-dropdown": "polymerelements/iron-dropdown#^1.5.1",
+    "paper-item": "polymerelements/paper-item#^1.2.1",
+    "paper-menu": "polymerelements/paper-menu#^1.2.2",
+    "paper-menu-button": "polymerelements/paper-menu-button#^1.5.0"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

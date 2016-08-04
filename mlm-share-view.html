@@ -9,7 +9,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-dropdown/iron-dropdown.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-input/paper-input-container.html">
 <link rel="import" href="../paper-input/paper-input.html">
@@ -20,6 +22,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="mlm-shared-styles.html">
 <link rel="import" href="../plutonium-elements/plutonium-elements.html">
 <link rel="import" href="../plutonium-manageable-content/plutonium-manageable-content.html">
+
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-menu-button/paper-menu-button.html">
 
 <!--
 `<mlm-share-view>` Share page of the application.
@@ -40,6 +46,9 @@ Wham! It's all awesome now!
 
         <style include="mlm-shared-styles">
 
+            :host {
+                --paper-menu-background-color: none;
+            }
             /*            .main-action-fab-container {
                             position: relative;
                         }
@@ -189,9 +198,22 @@ Wham! It's all awesome now!
         <!--</iron-pages>-->
 
         <div class="floating-action-bar layout horizontal wrap">
+                        <paper-menu-button
+                            horizontal-align="right"
+                            vertical-align="bottom">
+                            <paper-fab id="addSectionButton" icon="more-vert" class="dropdown-trigger minor-action-fab" title="Add new section."></paper-fab>
+                            <paper-menu class="dropdown-content">
+                                <paper-fab id="addSectionButton" on-tap="onAddSection" icon="add-circle" class="minor-action-fab" title="Embedd text to the message content."></paper-fab>
+                                <paper-fab id="addVideoButton" on-tap="onEmbedVideo" icon="theaters" class="minor-action-fab" title="Embedd video to the message content."></paper-fab>
+                                <paper-fab id="addImageButton" on-tap="onEmbedImage" icon="perm-media"  class="minor-action-fab" title="Embedd image to the message content."></paper-fab>
+                                <paper-fab id="addLinkButton" on-tap="onEmbedLink" icon="link" class="minor-action-fab" title="Embedd a link to another message to the message content."></paper-fab>
+                            </paper-menu>
+                        </paper-menu-button>
+            
+            
             <!--<paper-fab class="minor-action-fab" icon="send" on-tap="onSendMessage" title="Publish content" id="sendMessageFab"></paper-fab>-->
-            <paper-fab class="minor-action-fab" icon="save" on-tap="onShare" title="Publish content" id="sendMessageFab"></paper-fab>
-            <paper-fab class="minor-action-fab" icon="clear" on-tap="onClear" title="Cancel all changes & create new article." id="sendNewContentFab"></paper-fab>
+            <paper-fab icon="save" on-tap="onShare" title="Publish content" id="sendMessageFab"></paper-fab>
+            <paper-fab icon="clear" on-tap="onClear" title="Cancel all changes & create new article." id="sendNewContentFab"></paper-fab>
 
         </div>
 
@@ -384,6 +406,60 @@ Wham! It's all awesome now!
                     }, this);
                     return name;
                 }
+            },
+            /**
+             * Fired when a section adder floating-action-button pushed.
+             *
+             * @event create
+             */
+
+            /**
+             * Add text-section handler.
+             */
+            onAddSection: function () {
+                console.log('Add section after field[' + 'section' + this.contentModel.sections.length + ']');
+                this.fire('create', {
+                    name: 'section' + this.contentModel.sections.length,
+                    type: 'plutonium-cm-editor-text',
+                    title: '',
+                    data: ''
+                });
+            },
+            /**
+             * Add video-section handler.
+             */
+            onEmbedVideo: function () {
+                console.log('Embed video to after field[' + 'section' + this.contentModel.sections.length + ']');
+                this.fire('create', {
+                    name: 'section' + this.contentModel.sections.length,
+                    type: 'plutonium-cm-editor-video',
+                    title: '',
+                    data: ''
+                });
+            },
+            /**
+             * Add image-section handler.
+             */
+            onEmbedImage: function () {
+                console.log('Embed image to after field[' + 'section' + this.contentModel.sections.length + ']');
+                this.fire('create', {
+                    name: this.name,
+                    type: 'plutonium-cm-editor-image',
+                    title: '',
+                    data: ''
+                });
+            },
+            /**
+             * Add link-section handler.
+             */
+            onEmbedLink: function () {
+                console.log('Embed link to after field[' + 'section' + this.contentModel.sections.length + ']');
+                this.fire('create', {
+                    name: 'section' + this.contentModel.sections.length,
+                    type: 'plutonium-cm-editor-link',
+                    title: '',
+                    data: ''
+                });
             }
 //            itemsAddedOrRemoved: function (splice) {
 //                if (splice === undefined || splice === null)
