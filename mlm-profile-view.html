@@ -48,8 +48,8 @@ Wham! It's all awesome now!
 
             }
 
-            
-             
+
+
             .circle {
                 display: inline-block;
                 height: 64px;
@@ -83,23 +83,7 @@ Wham! It's all awesome now!
                    on-error="handleChangeLanguageError"
                    body="{{_changeLanguageModel}}"></iron-ajax>
 
-        <paper-dialog id="changeDeviceDialog" modal>
-            <h2 id="changeDeviceDialogTitle">Change device request</h2>
-            <form id="changeDeviceForm" is="iron-form" 
-                  verbose 
-                  content-type="application/json" 
-                  method="post" action="{{apiUrl}}/authentication/change"
-                  handle-as="json">
-                <div id="memberEraseConfirmDialogText" class="card-content">
-                    Are you surely change device? After login, until your inviter not approve you could not log in to the application.
-                </div>
-                <input name="owner" type="hidden" value="{{accountId}}" />
-                <div class="card-actions">
-                    <paper-button id="memberEraseConfirmDialogCancelButton" dialog-dismiss>Cancel</paper-button>
-                    <paper-button id="memberEraseConfirmDialogAcceptButton" dialog-confirm raised on-tap="onDeviceChangePrompted">OK</paper-button>
-                </div>
-            </form>
-        </paper-dialog>
+        
 
         <!--<br />-->
         <paper-card id="accountHeading" heading="Account" class="layout vertical">
@@ -188,21 +172,24 @@ Wham! It's all awesome now!
                 document.querySelector('html').setAttribute('lang', this.profile.preferredLanguage);
                 var newLang = document.querySelector('html').getAttribute('lang');
                 console.log('Change from locale ' + oldLang + ' to ' + newLang);
-                app.$.toast.text = msg;
-                app.$.toast.show();
+                this.fire('feedback', {
+                    message: msg
+                });
             },
             handleChangeLanguageError: function () {
                 var msg = 'Language changing failed.';
                 console.log(msg);
-                app.$.toast.text = msg;
-                app.$.toast.show();
+                this.fire('feedback', {
+                    message: msg
+                });
             },
             onDeviceChangePrompted: function () {
-                app.$.toast.text = 'Device changing request sent. Wait for your inviter\'s approval.';
-                app.$.toast.show();
+                this.fire('feedback', {
+                    message: 'Device changing request sent. Wait for your inviter\'s approval.'
+                });
             },
             openChangeDevicePrompt: function () {
-                this.$.changeDeviceDialog.open();
+                this.fire('change-device', {});
             }
         });
 
