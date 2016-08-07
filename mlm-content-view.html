@@ -23,6 +23,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../plutonium-elements/plutonium-widget-behavior.html">
 <link rel="import" href="mlm-shared-styles.html">
 <link rel="import" href="../plutonium-manageable-content/plutonium-manageable-content.html">
+<!--<link rel="import" href="bower_components/plutonium-manageable-content/plutonium-manageable-content.html">-->
 
 <!--
 `<mlm-content-view>` Article page of the application.
@@ -45,6 +46,10 @@ Wham! It's all awesome now!
             :host {
                 display: block;
                 /*@apply(--layout-vertical);*/
+            }
+            
+            plutonium-article-section {
+                margin: 24px;
             }
         </style>
 
@@ -122,21 +127,31 @@ Wham! It's all awesome now!
                         <div id="emptyChildrenText">No content in the folder.</div>
                     </div>
                 </paper-card>
+
             </div>
-            <paper-card heading="[[contentChildrenModel.title]]" hidden="[[!contentChildrenModel.leaf]]">
-                <template is="dom-repeat" items="{{contentChildrenModel.sections}}" as="section">
-                    <plutonium-article-field
-                        name="[[section.name]]" 
-                        model="{{section}}" 
-                        api-url="[[apiUrl]]">
-                    </plutonium-article-field>
-                    <br />
-                </template>
-            </paper-card>
+
+
+            <plutonium-article-section class="flex"
+                content-model="[[contentChildrenModel]]"
+
+                hidden="[[!contentChildrenModel.leaf]]">
+
+            </plutonium-article-section>
+            <!--            <paper-card heading="[[contentChildrenModel.title]]" hidden="[[!contentChildrenModel.leaf]]">
+                            <template is="dom-repeat" items="{{contentChildrenModel.sections}}" as="section">
+                                <plutonium-article-field
+                                    name="[[section.name]]" 
+                                    model="{{section}}" 
+                                    api-url="[[apiUrl]]">
+                                </plutonium-article-field>
+                                <br />
+                            </template>
+                        </paper-card>-->
         </template>
 
         <!--<template is="dom-if" if="{{!isEmpty(data.sections)}}">-->
         <div class="floating-action-bar layout horizontal wrap">
+            <paper-fab icon="icons:arrow-back" on-tap="onBack"></paper-fab>
             <paper-fab icon="icons:add" on-tap="onNewContent"></paper-fab>
         </div>
     </template>
@@ -399,6 +414,20 @@ Wham! It's all awesome now!
              */
             onNewContent: function () {
                 this.fire('new-content', {
+                    bubbles: false
+                });
+            },
+            /**
+             * Fired when pushed when the user try navigate back.
+             *
+             * @event back
+             */
+
+            /**
+             * Navigate back.
+             */
+            onBack: function () {
+                this.fire('back', {
                     bubbles: false
                 });
             }
