@@ -180,6 +180,9 @@ Wham! It's all awesome now!
             subject-name="[[selectedName]]"
             subject-id="[[memberSubrouteData.memberId]]">
         </mlm-member-delete-prompt>
+        <mlm-change-device-dialog
+            id="changeDeviceDialog">
+        </mlm-change-device-dialog>
         <mlm-recipient-picker
             id="recipientPickerDialog"
             items="{{contacts}}"
@@ -445,7 +448,7 @@ Wham! It's all awesome now!
                     type: String,
 //                    value: "http://185.51.67.30:8080/topflavon-backend"
 //                    value: "https://185.51.67.30:8080/topflavon-backend"
-                    value: "http://localhost:8084/topflavon-backend"
+                    value: "http://localhost:8080/topflavon-backend"
 //                    value: "https://localhost:8443/topflavon-backend"
                 },
                 subscriptionId: {
@@ -520,7 +523,9 @@ Wham! It's all awesome now!
                 'delete-member': 'onOpenDeleteMember',
                 'promote-member': 'onOpenPromoteMember',
                 'demote-member': 'onOpenDemoteMember',
-                'send-to-member': 'onNavigateToMessage'
+                'send-to-member': 'onNavigateToMessage',
+                'change-device': 'openChangeDevicePrompt',
+                'back': 'onBack'
             },
             observers: [
                 'observerAuthority(session.powerUser)'
@@ -574,7 +579,7 @@ Wham! It's all awesome now!
             onCreateMemberResponse: function (event, details) {
                 console.log('Member created successfully: ' + JSON.stringify(details.response));
                 // TODO: move to this
-                this.$.networkPage.$.childrenIronAjax.generateRequest();
+                this.$.childrenIronAjax.generateRequest();
                 this.$.possibleParentsIronAjax.generateRequest();
                 this.fire('feedback', {
                     message: 'Member created successfully'
@@ -592,8 +597,8 @@ Wham! It's all awesome now!
             onDeleteMemberResponse: function (event, details) {
                 console.log('Member removed successfully: ' + JSON.stringify(details.response));
                 this.$.networkPage.selectedAccountId = this.session.token;
-                this.$.networkPage.$.childrenIronAjax.generateRequest();
-                this.$.networkPage.$.genocideIronAjax.generateRequest();
+                this.$.childrenIronAjax.generateRequest();
+                this.$.genocideIronAjax.generateRequest();
                 this.fire('feedback', {
                     message: 'Member removed successfully.'
                 });
@@ -609,8 +614,8 @@ Wham! It's all awesome now!
             },
             onPromoteMemberResponse: function (event, details) {
                 console.log('Member promoted successfully: ' + JSON.stringify(details.response));
-                this.$.networkPage.$.childrenIronAjax.generateRequest();
-                this.$.networkPage.$.genocideIronAjax.generateRequest();
+                this.$.childrenIronAjax.generateRequest();
+                this.$.genocideIronAjax.generateRequest();
                 this.selectedRole = 'ADMIN';
                 this.fire('feedback', {
                     message: 'Member promoted successfully'
@@ -627,8 +632,8 @@ Wham! It's all awesome now!
             },
             onDemoteMemberResponse: function (event, details) {
                 console.log('Member demoted successfully: ' + JSON.stringify(details.response));
-                this.$.networkPage.$.childrenIronAjax.generateRequest();
-                this.$.networkPage.$.genocideIronAjax.generateRequest();
+                this.$.childrenIronAjax.generateRequest();
+                this.$.genocideIronAjax.generateRequest();
                 this.selectedRole = 'USER';
                 this.fire('feedback', {
                     message: 'Member demoted successfully'
@@ -644,6 +649,10 @@ Wham! It's all awesome now!
                 console.log(this.is + ' receive event pick-recipients.');
                 this.$.contactsAjax.generateRequest();
                 this.$.recipientPickerDialog.show();
+            },
+            
+            openChangeDevicePrompt: function () {
+                this.$.changeDeviceDialog.show();
             },
             isContent: function (r) {
                 return r === 'share-view';
@@ -717,6 +726,9 @@ Wham! It's all awesome now!
                         displayName: 'Anonymous',
                         email: null
                     };
+            },
+            onBack: function() {
+                
             }
         });
 
