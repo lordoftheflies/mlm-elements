@@ -31,28 +31,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../iron-selector/iron-selector.html">
 <link rel="import" href="../iron-dropdown/iron-dropdown.html">
 <link rel="import" href="../polymer-cookie/polymer-cookie.html">
-<!--<link rel="import" href="../plutonium-login-widget/plutonium-shared-styles.html">-->
-<link rel="import" href="../plutonium-login-widget/plutonium-login-widget.html">
-<link rel="import" href="../plutonium-login-widget/plutonium-logon-widget.html">
-<link rel="import" href="../plutonium-login-widget/plutonium-passwordreset-widget.html">
-<link rel="import" href="../plutonium-login-widget/plutonium-forgottenpassword-widget.html">
 <link rel="import" href="../plutonium-login-widget/plutonium-secure-application-behavior.html">
 
 
 <link rel="import" href="../mlm-elements/mlm-elements.html">
-
-<!--<link rel="import" href="my-icons.html">-->
-<!--<link rel="import" href="topflavon-shared-styles.html">-->
-<!--<link rel="import" href="plutonium-authorization-behavior.html">
-
-<link rel="import" href="topflavon-member-editor.html">
-<link rel="import" href="topflavon-member-delete-prompt.html">
-<link rel="import" href="topflavon-role-changer-prompt.html">
-<link rel="import" href="topflavon-recipient-picker.html">
-<link rel="import" href="plutonium-article-link-editor.html">
-<link rel="import" href="plutonium-article-image-editor.html">
-<link rel="import" href="plutonium-article-text-editor.html">
-<link rel="import" href="plutonium-article-video-editor.html">-->
 
 <!--
 `<mlm-app>` Demo version of the application.
@@ -305,10 +287,6 @@ Wham! It's all awesome now!
                     <!--Application name--> 
                     <app-toolbar id="bottomToolbar" hidden="[[!session.powerUser]]">
                         <iron-pages attr-for-selected="data-route" selected="[[page]]" class="flex" style="padding: 0px">
-                            <paper-tabs data-route="share-view"  attr-for-selected="name" selected="{{selectedMetaAction}}" style="width: 100%;" autoselect>
-                                <paper-tab text-id="shareTabLabel" name="share">Share</paper-tab>
-                                <paper-tab text-id="contentTabLabel" name="content">Content</paper-tab>
-                            </paper-tabs>
                             <paper-tabs hidden="[[!session.powerUser]]" data-route="content-view"  attr-for-selected="name" selected="{{selectedContentFolder}}" style="width: 100%;" autoselect>
                                 <paper-tab text-id="messagesPagePublicFolderTitle" name="public">Public</paper-tab>
                                 <paper-tab text-id="messagesPageMyContentsFolderTitle" name="drafts">Drafts</paper-tab>
@@ -650,7 +628,6 @@ Wham! It's all awesome now!
                 this.$.contactsAjax.generateRequest();
                 this.$.recipientPickerDialog.show();
             },
-            
             openChangeDevicePrompt: function () {
                 this.$.changeDeviceDialog.show();
             },
@@ -675,7 +652,6 @@ Wham! It's all awesome now!
             },
             onModifyModel: function (event, detail) {
                 console.log(this.is + ' receive modify-model event: ' + JSON.stringify(detail));
-//                document.querySelector('plutonium-article-field[name=' + detail.name + ']').fire('apply-model', detail);
                 this.$.sharePage.$.pcf.$$('plutonium-article-field[name=\"' + detail.name + '\"]').fire('apply-model', detail);
             },
             onEditArticle: function (event, detail) {
@@ -702,9 +678,7 @@ Wham! It's all awesome now!
                     this.registering = true;
                 } else {
                     error = JSON.stringify(args.error);
-//            app.activationCode = null;
                 }
-//            this.fire('unauthorized', {});
             },
             stringify: function (obj) {
                 return JSON.stringify(obj);
@@ -727,8 +701,8 @@ Wham! It's all awesome now!
                         email: null
                     };
             },
-            onBack: function() {
-                
+            onBack: function () {
+
             }
         });
 
