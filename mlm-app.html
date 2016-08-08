@@ -377,23 +377,14 @@ Wham! It's all awesome now!
                         selected-article-id="{{contentSubrouteData.contentId}}"
                         selected-content-folder="{{selectedContentFolder}}">
                     </mlm-content-view>
-
                 </iron-pages>
-
-                selected-role="{{selectedRole}}"
-                selected-account-id="{{memberSubrouteData.memberId}}"
-                account-id="{{session.token}}"
-
             </app-header-layout>
-
-
 
             <paper-toast id="mainToast"></paper-toast>
 
         </app-drawer-layout>
 
         <iron-media-query query="min-width: 600px" query-matches="{{wideLayout}}"></iron-media-query>
-
     </template>
 
     <script>
@@ -488,7 +479,7 @@ Wham! It's all awesome now!
                 'demotionDialog.iron-form-error': 'onDemoteMemberError',
                 'sharePage.pick-recipients': 'onOpenRecipientsPicker',
                 'feedback': 'onFeedback',
-                'recipientPickerDialog.pick-recipients': 'onOpenRecipientsPicker',
+                'pick-recipients': 'onOpenRecipientsPicker',
                 'article-text-edit': 'onOpenArticleTextEditor',
                 'article-video-edit': 'onOpenArticleVideoEditor',
                 'article-image-edit': 'onOpenArticleImageEditor',
