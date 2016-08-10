@@ -22,7 +22,8 @@
     "grapp-breadcrumbs": "^0.1.5",
     "paper-dialog-scrollable": "polymerelements/paper-dialog-scrollable#^1.1.5",
     "plutonium-authentication": "lordoftheflies/plutonium-authentication#^1.1.1",
-    "app-route": "polymerelements/app-route#^0.9.2"
+    "app-route": "polymerelements/app-route#^0.9.2",
+    "i18n-behavior": "t2ym/i18n-behavior#^1.1.6"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
