@@ -8,21 +8,21 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
 
-<link rel="import" href="../iron-ajax/iron-ajax.html">
-<link rel="import" href="../iron-pages/iron-pages.html">
-<link rel="import" href="../iron-list/iron-list.html">
-<link rel="import" href="../paper-material/paper-material.html">
-<link rel="import" href="../paper-item/paper-item.html">
-<link rel="import" href="../paper-card/paper-card.html">
-<link rel="import" href="../paper-fab/paper-fab.html">
-<link rel="import" href="../paper-tabs/paper-tabs.html">
-<link rel="import" href="../grapp-breadcrumbs/grapp-breadcrumbs.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/grapp-breadcrumbs/grapp-breadcrumbs.html">
 
-<link rel="import" href="../plutonium-elements/plutonium-widget-behavior.html">
+<link rel="import" href="../bower_components/plutonium-elements/plutonium-widget-behavior.html">
 <link rel="import" href="mlm-shared-styles.html">
-<link rel="import" href="../plutonium-manageable-content/plutonium-manageable-content.html">
+<link rel="import" href="../bower_components/plutonium-manageable-content/plutonium-manageable-content.html">
 <!--<link rel="import" href="bower_components/plutonium-manageable-content/plutonium-manageable-content.html">-->
 
 <!--
@@ -47,55 +47,11 @@ Wham! It's all awesome now!
                 display: block;
                 /*@apply(--layout-vertical);*/
             }
-            
+
             plutonium-article-section {
                 margin: 24px;
             }
         </style>
-
-        <iron-ajax id="rootModelAjax" 
-                   url="[[apiUrl]]/content-management/toc/info" 
-                   params="[[infoRequestParams]]" 
-                   handle-as="json" 
-                   last-response="{{rootModel}}" 
-                   auto></iron-ajax>
-        <iron-ajax id="parentTocAjax" 
-                   url="[[apiUrl]]/content-management/toc/path" 
-                   params="[[tocRequestParams]]" 
-                   handle-as="json" 
-                   last-response="{{parentModel}}" 
-                   on-response="onParentTocResponse" 
-                   on-error="onParentTocError" 
-                   auto></iron-ajax>
-        <iron-ajax id="childTocAjax" 
-                   url="[[apiUrl]]/content-management/toc" 
-                   params="[[tocRequestParams]]" 
-                   handle-as="json" 
-                   on-response="onContentResponse" 
-                   on-error="onContentError" 
-                   last-response="{{contentChildrenModel}}" 
-                   auto></iron-ajax>
-
-        <iron-ajax id="publisherAjax" 
-                   url="[[apiUrl]]/content-management/publish" 
-                   handle-as="json" 
-                   content-type="application/json"
-                   on-response="onPublishResponse" 
-                   on-error="onPublishError"
-                   method="POST"
-                   body="{{publisherModel}}">
-        </iron-ajax>
-        <iron-ajax id="unpublisherAjax" 
-                   url="[[apiUrl]]/content-management/unpublish" 
-                   handle-as="json" 
-                   content-type="application/json"
-                   on-response="onUnpublishResponse" 
-                   on-error="onUnpublishError"
-                   method="POST"
-                   body="{{publisherModel}}">
-        </iron-ajax>
-
-
 
         <template is="dom-if" if="{{contentChildrenModel.hasEmbeddedFile}}">
             File
@@ -132,9 +88,9 @@ Wham! It's all awesome now!
 
 
             <plutonium-article-section class="flex layout horizontal"
-                content-model="[[contentChildrenModel]]"
+                                       content-model="[[contentChildrenModel]]"
 
-                hidden="[[!contentChildrenModel.leaf]]">
+                                       hidden="[[!contentChildrenModel.leaf]]">
 
             </plutonium-article-section>
             <!--            <paper-card heading="[[contentChildrenModel.title]]" hidden="[[!contentChildrenModel.leaf]]">
@@ -243,9 +199,17 @@ Wham! It's all awesome now!
                 console.log(this.is + ' toc navigation request parameters updated: ' + JSON.stringify(this.tocRequestParams))
                 //            if (this.contentChildrenModel !== undefined && this.contentChildrenModel.sections !== undefined)
                 //                this.splice('contentChildrenModel.sections', 0, this.contentChildrenModel.sections.length);
-                this.$.rootModelAjax.generateRequest();
-                this.$.childTocAjax.generateRequest();
-                this.$.parentTocAjax.generateRequest();
+
+                this.fire('fetch-ajax', {
+                    ids: [
+                        'rootModelAjax',
+                        'childTocAjax',
+                        'parentTocAjax'
+                    ]
+                });
+//                this.$.rootModelAjax.generateRequest();
+//                this.$.childTocAjax.generateRequest();
+//                this.$.parentTocAjax.generateRequest();
             },
             observeContentChildrenModel: function () {
                 var list = document.querySelector('iron-list')
@@ -342,41 +306,41 @@ Wham! It's all awesome now!
             //        onNavigate: function (event, details) {
             //            page.redirect(app.baseUrl + '/content-tree/' + details.sourceEvent.currentTarget.href);
             //        },
-            onContentResponse: function () {
-                console.log('Content fetched for ' + this.selectedArticleId);
-            },
-            onContentError: function () {
-                console.log('Content fetching failed for ' + this.selectedArticleId);
-            },
-            onParentTocResponse: function () {
-                console.log('Toc-Content-View parent path success response (' + this.selectedArticleId + ').');
-                //                this.renderBreadCrumbs = true;
-            },
-            onParentTocError: function () {
-                console.log('Toc-Content-View parent path failed to respond (' + this.selectedArticleId + ').');
-                this.selectedContentFolder = 'public';
-                //                this.renderBreadCrumbs = true;
-            },
-            onPublishResponse: function () {
-                this.fire('feedback', {
-                    message: 'Message published succesfully.'
-                });
-            },
-            onPublishError: function () {
-                this.fire('feedback', {
-                    message: 'Message publishing failed.'
-                });
-            },
-            onUnpublishResponse: function () {
-                this.fire('feedback', {
-                    message: 'Message unpublished succesfully.'
-                });
-            },
-            onUnpublishError: function () {
-                this.fire('feedback', {
-                    message: 'Message publishing failed.'
-                });
-            },
+//            onContentResponse: function () {
+//                console.log('Content fetched for ' + this.selectedArticleId);
+//            },
+//            onContentError: function () {
+//                console.log('Content fetching failed for ' + this.selectedArticleId);
+//            },
+//            onParentTocResponse: function () {
+//                console.log('Toc-Content-View parent path success response (' + this.selectedArticleId + ').');
+//                //                this.renderBreadCrumbs = true;
+//            },
+//            onParentTocError: function () {
+//                console.log('Toc-Content-View parent path failed to respond (' + this.selectedArticleId + ').');
+//                this.selectedContentFolder = 'public';
+//                //                this.renderBreadCrumbs = true;
+//            },
+//            onPublishResponse: function () {
+//                this.fire('feedback', {
+//                    message: 'Message published succesfully.'
+//                });
+//            },
+//            onPublishError: function () {
+//                this.fire('feedback', {
+//                    message: 'Message publishing failed.'
+//                });
+//            },
+//            onUnpublishResponse: function () {
+//                this.fire('feedback', {
+//                    message: 'Message unpublished succesfully.'
+//                });
+//            },
+//            onUnpublishError: function () {
+//                this.fire('feedback', {
+//                    message: 'Message publishing failed.'
+//                });
+//            },
             getLink: function (item) {
                 //            return '/content-tree/' + item.name;
                 return '/content-tree/' + item.hasEmbeddedFile ? item.data : item.name;

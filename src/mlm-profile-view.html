@@ -8,16 +8,16 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-ajax/iron-ajax.html">
-<link rel="import" href="../paper-material/paper-material.html">
-<link rel="import" href="../paper-card/paper-card.html">
-<link rel="import" href="../paper-button/paper-button.html">
-<link rel="import" href="../paper-checkbox/paper-checkbox.html">
-<link rel="import" href="../paper-menu/paper-menu.html">
-<link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="mlm-shared-styles.html">
-<link rel="import" href="../plutonium-elements/plutonium-widget-behavior.html">
+<link rel="import" href="../bower_components/plutonium-elements/plutonium-widget-behavior.html">
 
 <!--
 `<mlm-profile-view>` User profile page of the application.
@@ -69,23 +69,6 @@ Wham! It's all awesome now!
 
         </style>
 
-        <!--Profile-->
-        <iron-ajax id="profileAjax" url="[[apiUrl]]/addressbook/[[accountId]]/profile" last-response="{{profile}}" auto="[[accountId]]"></iron-ajax>
-        <iron-ajax id="localesAjax" url="[[apiUrl]]/localization/locales" last-response="{{locales}}" auto></iron-ajax>
-
-
-        <iron-ajax id="changeLanguageAjax" 
-                   method="POST"
-                   handle-as="json"
-                   content-type="application/json"
-                   url="[[apiUrl]]/localization/change" 
-                   on-response="handleChangeLanguageResponse"
-                   on-error="handleChangeLanguageError"
-                   body="{{_changeLanguageModel}}"></iron-ajax>
-
-        
-
-        <!--<br />-->
         <paper-card id="accountHeading" heading="Account" class="layout vertical">
             <div class="card-content">
                 <div>

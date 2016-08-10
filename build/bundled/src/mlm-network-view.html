@@ -1,0 +1,68 @@
+<html><head><link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../neon-animation/neon-animations.html">
+<link rel="import" href="../iron-overlay-behavior/iron-overlay-behavior.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+<link rel="import" href="../paper-card/paper-card.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-material/paper-material.html">
+<link rel="import" href="../iron-list/iron-list.html">
+<link rel="import" href="mlm-shared-styles.html">
+<link rel="import" href="../plutonium-elements/plutonium-widget-behavior.html">
+<link rel="import" href="../plutonium-elements/plutonium-authorization-behavior.html">
+
+
+
+</head><body><dom-module id="mlm-network-view">
+
+    <template>
+
+        <style include="mlm-shared-styles">
+            :host {
+                display: block;
+                @apply(--layout-vertical);
+            }
+
+        </style>
+
+
+
+        <iron-list id="childrenIronList" items="[[children]]" as="item" hidden="[[isEmpty(children)]]" class="layout vertical">
+            <template>
+                <paper-item class="layout horizontal">
+                    <paper-material class="flex layout horizontal" nodename="[[item.name]]" nodeid="[[item.id]]" role="[[item.role]]" on-tap="onNavigateToChildren" tabindex="[[tabIndex]]">
+                        <div class="flex">
+                            <iron-icon icon="[[getIcon(item.role)]]"></iron-icon>
+                            <span>[[item.name]]</span>
+                        </div>
+                    </paper-material>
+                </paper-item>
+            </template>
+        </iron-list>
+
+        <paper-card elevation="1" hidden="[[!isEmpty(children)]]">
+            <div class="card-content">
+                <div id="emptyChildrenText">No children.</div>
+            </div>
+        </paper-card>
+
+        <div class="floating-action-bar layout horizontal wrap">
+            <paper-fab icon="icons:add" on-tap="onNewMember"></paper-fab>
+            <template is="dom-if" if$="[[!isMeIndicator]]">
+                <paper-fab icon="icons:remove" on-tap="onDeleteMember"></paper-fab>
+
+                <paper-fab icon="icons:send" on-tap="onSendToMember"></paper-fab>
+                <template is="dom-if" if$="[[isUserIndicator]]">
+                    <paper-fab icon="icons:star" on-tap="onPromoteMember"></paper-fab>
+                </template>
+                <template is="dom-if" if$="[[isAdminIndicator]]">
+                    <paper-fab icon="icons:star-border" on-tap="onDemoteMember"></paper-fab>
+                </template>
+            </template>
+
+        </div>
+
+    </template>
+
+    <script>Polymer({is:"mlm-network-view",behaviors:[PlutoniumBehaviors.WidgetBehavior,PlutoniumBehaviors.AuthorizationBehavior],properties:{isMeIndicator:{type:Boolean,computed:"isMe(selectedAccountId, accountId)"},isUserIndicator:{type:Boolean,notify:!0,computed:"isUser(selectedRole)"},isAdminIndicator:{type:Boolean,computed:"isAdmin(selectedRole)"},genocideRequestParams:{type:Object,notify:!0,computed:"computeGenocideRenocideRequestParams(selectedAccountId)"},childrenRequestParams:{type:Object,notify:!0,computed:"computeChildrenRequestParams(selectedAccountId)"},selectedAccountId:{type:String,notify:!0},selectedRole:{type:String,notify:!0,value:"USER"},selectedName:{type:String,notify:!0},possibleParents:{type:Array,notify:!0},locales:{type:Array,notify:!0},selectedType:{type:String,notify:!0,value:"USER"},parents:{type:Array,notify:!0},children:{type:Array,notify:!0}},observers:["observeChildRequestParams(selectedAccountId)","observeGenocideRequestParams(selectedAccountId)","observeOwnerChange(accountId)"],listeners:{"iron-select":"onSelectMember","network-tree-refresh":"onRefresh"},ready:function(){console.log(this.is+" is ready.")},observeOwnerChange:function(e){this.selectedAccountId=e},observeChildRequestParams:function(e){console.log(this.is+" child request parameters updated: "+JSON.stringify(this.childrenRequestParams)),this.fire("fetch-data",{ids:["childrenIronAjax","genocideIronAjax"]})},observeGenocideRequestParams:function(e){console.log(this.is+" genocide request parameters updated: "+JSON.stringify(this.genocideRequestParams)),this.fire("fetch-data",{ids:["childrenIronAjax","genocideIronAjax"]})},computeChildrenRequestParams:function(){return{parentId:this.selectedAccountId}},computeGenocideRenocideRequestParams:function(){return{childId:this.selectedAccountId}},onSelectMember:function(e,t){console.log("Network-view select account:"),this.unusedCodes=t.item.unusedcodes,this.selectedRole=t.item.role},onNavigateToChildren:function(e,t){this.selectedAccountId=e.currentTarget.nodeid,this.selectedRole=e.currentTarget.role,this.selectedName=e.currentTarget.nodename,console.log("Network-view navigate to children ")},onNavigateUp:function(e,t){this.accountId=this.$.parentBeadCrumbs.children[this.$.parentBeadCrumbs.children.length<3?0:this.$.parentBeadCrumbs.children.length-3].nodeid,this.selectedAccount=this.accountId,this.fire("fetch-data",{ids:["childrenIronAjax","genocideIronAjax"]}),console.log("Network-view navigate to children ")},onRefresh:function(){this.fire("fetch-data",{ids:["childrenIronAjax","genocideIronAjax"]})},onNewMember:function(){this.fire("new-member")},onDeleteMember:function(){this.fire("delete-member")},onSendToMember:function(){this.fire("send-to-member")},onPromoteMember:function(){this.fire("promote-member")},onDemoteMember:function(){this.fire("demote-member")},isEmpty:function(e){return void 0===e||null===e||0===e.length},isMe:function(e,t){return e===t},isGroup:function(e){return"GROUP"===e},isAdmin:function(e){return"ADMIN"===e},isUser:function(e){return"USER"===e}});</script>
+
+</dom-module></body></html>

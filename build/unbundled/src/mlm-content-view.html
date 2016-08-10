@@ -1,0 +1,84 @@
+<html><head><link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../iron-pages/iron-pages.html">
+<link rel="import" href="../iron-list/iron-list.html">
+<link rel="import" href="../paper-material/paper-material.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-card/paper-card.html">
+<link rel="import" href="../paper-fab/paper-fab.html">
+<link rel="import" href="../paper-tabs/paper-tabs.html">
+<link rel="import" href="../grapp-breadcrumbs/grapp-breadcrumbs.html">
+
+<link rel="import" href="../plutonium-elements/plutonium-widget-behavior.html">
+<link rel="import" href="mlm-shared-styles.html">
+<link rel="import" href="../plutonium-manageable-content/plutonium-manageable-content.html">
+
+
+
+</head><body><dom-module id="mlm-content-view">
+
+    <template>
+
+        <style include="mlm-shared-styles">
+            :host {
+                display: block;
+                /*@apply(--layout-vertical);*/
+            }
+
+            plutonium-article-section {
+                margin: 24px;
+            }
+        </style>
+
+        <template is="dom-if" if="{{contentChildrenModel.hasEmbeddedFile}}">
+            File
+            <iframe src$="{{getContentFileUrl(contentChildrenModel.embeddedFileName)}}"></iframe>
+        </template>
+        <template is="dom-if" if="{{!contentChildrenModel.hasEmbeddedFile}}">
+            <div class="layout vertical flex" hidden="[[contentChildrenModel.leaf]]">
+                <iron-list items="{{contentChildrenModel.sections}}" as="section" hidden="[[isEmpty(contentChildrenModel)]]">
+                    <template>
+                        
+                        <paper-item class="layout horizontal">
+                            <paper-material elevation="1" class="flex layout horizontal" on-tap="onNavigate" name="[[section.name]]">
+                                <span class="flex">[[section.title]]</span>
+                                <div hidden="[[!isDraftSelected(selectedContentFolder)]]" class="layout horizontal">
+                                    <paper-icon-button name="[[section.name]]" icon="create" on-tap="onEditArticle"></paper-icon-button>
+                                    <paper-icon-button name="[[section.name]]" icon="delete" on-tap="onDeleteArticle"></paper-icon-button>
+                                    <paper-icon-button name="[[section.name]]" icon="file-upload" on-tap="onPublishArticle"></paper-icon-button>
+                                    <paper-icon-button name="[[section.name]]" icon="file-download" on-tap="onUnpublishArticle"></paper-icon-button>
+                                </div>
+                            </paper-material>
+
+                        </paper-item>
+                        
+                    </template>
+                </iron-list>
+
+                <paper-card elevation="1" hidden="[[!isEmpty(contentChildrenModel)]]">
+                    <div class="card-content">
+                        <div id="emptyChildrenText">No content in the folder.</div>
+                    </div>
+                </paper-card>
+
+            </div>
+
+
+            <plutonium-article-section class="flex layout horizontal" content-model="[[contentChildrenModel]]" hidden="[[!contentChildrenModel.leaf]]">
+
+            </plutonium-article-section>
+            
+        </template>
+
+        
+        <div class="floating-action-bar layout horizontal wrap">
+            <paper-fab icon="icons:arrow-back" on-tap="onBack"></paper-fab>
+            <paper-fab icon="icons:add" on-tap="onNewContent"></paper-fab>
+        </div>
+    </template>
+
+
+    <script>"use strict";Polymer({is:"mlm-content-view",behaviors:[PlutoniumBehaviors.WidgetBehavior],properties:{tocRequestParams:{type:Object,notify:!0,value:{pageId:"ROOT"}},infoRequestParams:{type:Object,notify:!0,value:{pageId:"ROOT"}},renderBreadCrumbs:{type:Boolean,notify:!0,value:!1},selectedContentFolder:{type:String,notify:!0,value:"public"},selectedArticleId:{type:String,notify:!0},ownerId:{type:String,notify:!0},baseUrl:{type:String,notify:!0},rootModel:{type:Object,notify:!0},parentModel:{type:Object,notify:!0},contentChildrenModel:{type:Object,notify:!0},contentRootUrl:{type:String,notify:!0,value:"http://localhost/topn_data/"}},observers:["observeSelectedContentFolder(selectedContentFolder)","observeCurrentArticle(selectedArticleId, selectedContentFolder, ownerId)","observeContentChildrenModel(contentChildrenModel)"],ready:function(){console.log(this.is+" is ready.")},observeCurrentArticle:function(e,t,n){this.tocRequestParams.pageId=e,this.tocRequestParams.tag=t,this.tocRequestParams.owner=n,this.infoRequestParams.pageId=e,console.log(this.is+" toc navigation request parameters updated: "+JSON.stringify(this.tocRequestParams)),this.fire("fetch-ajax",{ids:["rootModelAjax","childTocAjax","parentTocAjax"]})},observeContentChildrenModel:function(){var e=document.querySelector("iron-list");e&&e.fire("iron-resize")},observeSelectedContentFolder:function(e){this.tocRequestParams&&(console.log(this.is+" observe selected content folder: "+e),this.tocRequestParams.tag=e,this.tocRequestParams.pageId=this.selectedArticleId="ROOT")},observeOwnerId:function(e){this.tocRequestParams&&console.log(this.is+" observe as owner: "+e)},observeSelectedArticleId:function(e){this.tocRequestParams&&console.log(this.is+" selected article: "+e)},observeAccountId:function(e){},getItemClasses:function(e){return e.tags.join(" ")},isLeaf:function(e){return console.log(e.sections.length),0===e.sections.length},isFork:function(e){return e.sections.length>0},isEmpty:function(e){return void 0===e||null===e||void 0===e.sections||null===e.sections||0===e.sections.length},getContentFileUrl:function(e){return this.contentRootUrl+e},isDraftSelected:function(e){return"drafts"===e},onEditArticle:function(e,t){e.stopPropagation(),this.fire("edit-content",{articleId:e.currentTarget.name})},onRemoveArticle:function(){},getLink:function(e){return e.data},onNavigate:function(e,t){this.selectedArticleId=e.currentTarget.name},onDeleteArticle:function(e,t){alert("Not implemented yet.")},onPublishArticle:function(e,t){e.stopPropagation(),this.publisherModel={owner:this.ownerId,article:e.currentTarget.name},this.$.publisherAjax.generateRequest()},onUnpublishArticle:function(e,t){e.stopPropagation(),this.publisherModel={owner:this.ownerId,article:e.currentTarget.name},this.$.unpublisherAjax.generateRequest()},onNewContent:function(){this.fire("new-content",{bubbles:!1})},onBack:function(){this.fire("back",{bubbles:!1})}});</script>
+
+</dom-module></body></html>

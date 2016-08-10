@@ -1,0 +1,74 @@
+<html><head><link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-input/paper-input-container.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../file-upload/file-upload.html">
+
+<link rel="import" href="../paper-chip/paper-chip.html">
+<link rel="import" href="mlm-shared-styles.html">
+<link rel="import" href="../plutonium-elements/plutonium-elements.html">
+<link rel="import" href="../plutonium-manageable-content/plutonium-manageable-content.html">
+
+
+</head><body><dom-module id="mlm-send-view">
+
+    <template>
+
+        <style include="mlm-shared-styles">
+
+            /*            .main-action-fab-container {
+                            position: relative;
+                        }
+                        paper-fab.main-action-fab {
+                            position: absolute;
+                            bottom: -45px;
+                            right: 0px;
+                        }
+                        paper-fab.minor-action-fab {
+                            position: absolute;
+                            top: -65px;
+                            right: 0px;
+                        }*/
+        </style>
+
+        
+        <paper-card elevation="1" name="share" heading="Share with others" class="layout vertical main-action-fab-container">
+                <div class="card-content layout horizontal">
+                    <div class="flex layout vertical">
+                        <div class="layout horizontal">
+                            <paper-input-container id="recipientsInput" class="flex" always-float-label="true">
+                                <label>Recipients</label>
+                                <div class="paper-input-input layout horizontal wrap">
+                                    <template is="dom-repeat" items="[[selectedItemIds]]">
+                                        <paper-chip member="[[item]]" style="margin-right: 10px; background-color: white; z-index: 2000" removable="">
+                                            
+                                            
+                                            <h1>[[getUserName(item)]]</h1>
+                                            <h2>[[getUserEmail(item)]]</h2>
+                                        </paper-chip>
+                                    </template>
+                                </div>
+                            </paper-input-container>
+
+                            
+                            <paper-icon-button icon="supervisor-account" title="Choose contacts." on-tap="onOpenRecipientsDialog"></paper-icon-button>
+                            <paper-icon-button icon="clear" title="Clear recipients input." on-tap="onClearRecipients"></paper-icon-button>
+                        </div>
+                        <paper-input id="messageInput" class="bottom title" label="Message" value="{{message}}"></paper-input>
+                    </div>
+                </div>
+
+            </paper-card>
+
+
+        <div class="floating-action-bar layout horizontal wrap">
+            <paper-fab icon="send" on-tap="onSendMessage" title="Publish content" id="sendMessageFab"></paper-fab>
+        </div>
+
+    </template>
+
+    <script>Polymer({is:"mlm-send-view",behaviors:[PlutoniumBehaviors.WidgetBehavior],properties:{shareAjaxRequest:{},pageDto:{type:Object,notify:!0},contentModel:{type:Object,notify:!0,value:{sections:[]}},shareModel:{type:Object,notify:!0,value:{recipients:[]}},selectedItemIds:{type:Array,notify:!0},selectedMetaAction:{type:String,notify:!0,value:"content"},articleContentType:{type:String,notify:!0,value:"assembled"},articleContentHeading:{type:String,notify:!0,computed:"computeHeader(articleContentType)"},recipients:{type:String,notify:!0,value:""}},observers:["itemsAddedOrRemoved(selectedItemIds.splices)"],listeners:{remove:"onRemoveItem",share:"onShare","shareAjax.error":"onShareError","shareAjax.response":"onShareResponse"},ready:function(){console.log(this.is+" is ready.")},onClear:function(){},onShare:function(e,t){console.log("Save content: "+JSON.stringify(this.contentModel)),this.contentModel.leaf=!0,this.$.shareAjax.generateRequest()},onShareError:function(){this.fire("feedback",{message:"Content sharing failed."})},onShareResponse:function(){this.fire("feedback",{message:void 0===this.contentModel.id||null===this.contentModel?"New content shared successfully.":"Content modified successfully."}),document.querySelector("#childTocAjax").generateRequest()},onNewArticle:function(){this.contentModel={sections:[]}},onOpenRecipientsDialog:function(){console.log(this.is+" send event pick-recipients."),this.fire("pick-recipients",{})},onClearRecipients:function(){this.splice("selectedItemIds",0,this.selectedItemIds.length),console.log("mlm-recipient-picker clear recipients.")},itemsAddedOrRemoved:function(e){if(void 0!==e&&null!==e){console.log("mlm-recipient-picker change recipients: "+JSON.stringify(this.selectedItemIds));var t="";void 0!==this.items&&null!==this.items&&this.items.forEach(function(e,n){this.selectedItemIds.indexOf(e.id)>-1&&(t+=e.name+" ")},this),this.recipients=t}},onRemoveItem:function(e,t){e.stopPropagation(),this.splice("selectedItemIds",this.selectedItemIds.indexOf(e.currentTarget.member),1)},computeHeader:function(e){return"assembled"===e?"Edit content":"Attach file"},onOnlySaveContent:function(e,t){console.log("Save content.")},onSendMessage:function(e,t){this.shareModel.recipients=this.selectedItemIds,this.shareModel.message=this.message,this.shareModel.contentId=this.contentModel.id,this.$.messageSendAjax.generateRequest()},onMessageSendResponse:function(){this.selectedMetaAction="content",this.fire("feedback",{message:"Message sent successfully."})},onMessageSendError:function(){this.fire("feedback",{message:"Message sending failed."})},getUserName:function(e){if(void 0!==this.items&&null!==this.items){var t="Unknown";return this.items.forEach(function(n,i){n.id===e&&(t=n.name)},this),t}},getUserEmail:function(e){if(void 0!==this.items&&null!==this.items){var t="Unknown";return this.items.forEach(function(n,i){n.id===e&&(t=n.email)},this),t}},getRoleIcon:function(e){if(void 0!==this.items&&null!==this.items){var t="Unknown";return this.items.forEach(function(n,i){n.id===e&&(t="M")},this),t}}});</script>
+
+</dom-module></body></html>

@@ -1,0 +1,52 @@
+<html><head><link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../neon-animation/neon-animations.html">
+<link rel="import" href="../iron-overlay-behavior/iron-overlay-behavior.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../paper-card/paper-card.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-fab/paper-fab.html">
+<link rel="import" href="../paper-material/paper-material.html">
+<link rel="import" href="../paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../iron-list/iron-list.html">
+<link rel="import" href="../plutonium-login-widget/plutonium-shared-styles.html">
+<link rel="import" href="mlm-shared-styles.html">
+
+</head><body><dom-module id="mlm-change-device-dialog">
+
+    <template>
+        <style include="plutonium-shared-styles">
+            :host {
+                display: block;
+                @apply(--layout-vertical);
+            }
+
+        </style>
+        <paper-dialog id="dialog" class="plutonium widget" modal="" entry-animation="scale-up-animation" exit-animation="scale-down-animation" with-backdrop="">
+            <paper-toolbar>
+                <h2 id="changeDeviceDialogTitle">Change device request</h2>
+            </paper-toolbar>
+            <form id="form" is="iron-form" verbose="" content-type="application/json" method="post" action="{{apiUrl}}/authentication/change" handle-as="json">
+                <div id="memberEraseConfirmDialogText" class="card-content">
+                    Are you surely change device? After login, until your inviter not approve you could not log in to the application.
+                </div>
+                <input name="owner" type="hidden" value="{{accountId}}">
+                <div class="card-actions">
+                    <paper-button id="changeDeviceDialogCancelButton" dialog-dismiss="" raised="">Cancel</paper-button>
+                </div>
+
+                <paper-fab id="changeDeviceDialogAcceptButton" icon="done" dialog-confirm="" raised="" on-tap="onDeviceChangePrompted">
+
+                </paper-fab>
+            </form>
+        </paper-dialog>
+
+    </template>
+
+    <script>Polymer({is:"mlm-change-device-dialog",behaviors:[],properties:{action:{type:String,notify:!0},subjectName:{type:String,notify:!0},ownerId:{type:String,notify:!0},subjectId:{type:String,notify:!0}},onPrompted:function(){this.$.form.submit(),console.log("Delete member prompted.")},show:function(){this.$.dialog.open()}});</script>
+
+</dom-module></body></html>

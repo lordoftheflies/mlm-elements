@@ -7,34 +7,34 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../app-route/app-location.html">
-<link rel="import" href="../app-route/app-route.html">
-<link rel="import" href="../app-layout/app-drawer-layout/app-drawer-layout.html">
-<link rel="import" href="../app-layout/app-drawer/app-drawer.html">
-<link rel="import" href="../app-layout/app-scroll-effects/app-scroll-effects.html">
-<link rel="import" href="../app-layout/app-header/app-header.html">
-<link rel="import" href="../app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../paper-item/paper-item.html">
-<link rel="import" href="../paper-toast/paper-toast.html">
-<link rel="import" href="../paper-tabs/paper-tabs.html">
-<link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../paper-menu/paper-menu.html">
-<link rel="import" href="../paper-styles/paper-styles.html">
-<link rel="import" href="../iron-ajax/iron-ajax.html">
-<link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../iron-pages/iron-pages.html">
-<link rel="import" href="../iron-icon/iron-icon.html">
-<link rel="import" href="../iron-icons/iron-icons.html">
-<link rel="import" href="../iron-selector/iron-selector.html">
-<link rel="import" href="../iron-dropdown/iron-dropdown.html">
-<link rel="import" href="../polymer-cookie/polymer-cookie.html">
-<link rel="import" href="../plutonium-login-widget/plutonium-secure-application-behavior.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/iron-dropdown/iron-dropdown.html">
+<link rel="import" href="../bower_components/polymer-cookie/polymer-cookie.html">
+<link rel="import" href="../bower_components/plutonium-login-widget/plutonium-secure-application-behavior.html">
 
 
-<link rel="import" href="../mlm-elements/mlm-elements.html">
+<link rel="import" href="mlm-elements.html">
 
 <!--
 `<mlm-app>` Demo version of the application.
@@ -122,14 +122,61 @@ Wham! It's all awesome now!
         <polymer-cookie id="rememberMeCookie" name="rememberMe" value="{{rememberMe}}" time="1" format="d"></polymer-cookie>
         <polymer-cookie id="tokenCookie" name="token" value="{{token}}" time="1" format="d"></polymer-cookie>
 
+        <!-- General requests -->
+        <iron-ajax id="sessionAjax" url="[[apiUrl]]/authentication/session?token=[[token]]" last-response="{{session}}" auto></iron-ajax>
         <iron-ajax id="localesAjax" url="[[apiUrl]]/localization/locales" last-response="{{locales}}" auto></iron-ajax>
+        <iron-ajax id="syncSubsAjax" url="[[apiUrl]]/mailbox/subscription" body="{{subscriptionDto}}" content-type="application/json" 
+                   last-response="{{subsResp}}" method="POST" auto></iron-ajax>
+        <!-- Mailbox view requests -->
+        <iron-ajax id="mailBoxAjax" url="[[apiUrl]]/mailbox/[[accountId]]/[[selectedMailBoxFolder]]" last-response="{{mailBoxModel}}"></iron-ajax>
+        <!-- Profile view requests -->
+        <iron-ajax id="profileAjax" url="[[apiUrl]]/addressbook/[[accountId]]/profile" last-response="{{profile}}" auto="[[accountId]]"></iron-ajax>
+        <iron-ajax id="changeLanguageAjax" method="POST" handle-as="json" content-type="application/json" url="[[apiUrl]]/localization/change" 
+                   on-response="handleChangeLanguageResponse" on-error="handleChangeLanguageError" body="{{_changeLanguageModel}}"></iron-ajax>
+        <!-- Content view requests -->
         <iron-ajax id="possibleParentsIronAjax" url="[[apiUrl]]/addressbook/all" last-response="{{possibleParents}}" auto></iron-ajax>
         <iron-ajax id="articleDetailAjax" url="[[apiUrl]]/content-management/toc" params="{{editParams}}" last-response="{{editedContentModel}}"></iron-ajax>
         <iron-ajax id="contactsAjax" url="[[apiUrl]]/addressbook/[[session.token]]/contacts" last-response="{{contacts}}" auto></iron-ajax>
-        <iron-ajax id="syncSubsAjax" url="[[apiUrl]]/mailbox/subscription" body="{{subscriptionDto}}" content-type="application/json" 
-                   last-response="{{subsResp}}" method="POST" auto></iron-ajax>
+
+        <iron-ajax id="rootModelAjax" 
+                   url="[[apiUrl]]/content-management/toc/info" 
+                   params="[[infoRequestParams]]" 
+                   handle-as="json" 
+                   last-response="{{rootModel}}" 
+                   auto></iron-ajax>
+        <iron-ajax id="parentTocAjax" 
+                   url="[[apiUrl]]/content-management/toc/path" 
+                   params="[[tocRequestParams]]" 
+                   handle-as="json" 
+                   last-response="{{parentModel}}" 
+                   on-response="onParentTocResponse" 
+                   on-error="onParentTocError" 
+                   auto></iron-ajax>
+        <iron-ajax id="childTocAjax" 
+                   url="[[apiUrl]]/content-management/toc" 
+                   params="[[tocRequestParams]]" 
+                   handle-as="json" 
+                   on-response="onContentResponse" 
+                   on-error="onContentError" 
+                   last-response="{{contentChildrenModel}}" 
+                   auto></iron-ajax>
+
+        <iron-ajax id="publisherAjax" 
+                   url="[[apiUrl]]/content-management/publish" 
+                   handle-as="json" 
+                   content-type="application/json"
+                   on-response="onPublishResponse" on-error="onPublishError" method="POST" body="{{publisherModel}}"></iron-ajax>
+        <iron-ajax id="unpublisherAjax" url="[[apiUrl]]/content-management/unpublish" handle-as="json" content-type="application/json" on-response="onUnpublishResponse" on-error="onUnpublishError" method="POST" body="{{publisherModel}}"></iron-ajax>
+        <!-- Network view requests -->
         <iron-ajax id="genocideIronAjax" url="[[apiUrl]]/addressbook/genocide" params="[[genocideRequestParams]]" last-response="{{parents}}" auto></iron-ajax>
         <iron-ajax id="childrenIronAjax" url="[[apiUrl]]/addressbook/children" params="[[childrenRequestParams]]" last-response="{{children}}" auto></iron-ajax>
+        <iron-ajax id="parentCandidatesAjax" url="[[apiUrl]]/content-management/candidates/parent" last-response="{{parentCandidates}}" auto></iron-ajax>
+        <!-- Share view requests -->
+        <iron-ajax id="shareAjax" handle-as="json" content-type="application/json" method="POST" 
+                   url="[[apiUrl]]/content-management/[[accountId]]/save" body="{{contentModel}}"></iron-ajax>
+        <!-- Send view requests -->
+        <iron-ajax id="messageSendAjax" handle-as="json" content-type="application/json" method="POST" on-response="onMessageSendResponse" 
+                   on-error="onMessageSendError" url="[[apiUrl]]/mailbox/[[accountId]]/send" body="{{shareModel}}"></iron-ajax>
 
         <mlm-member-editor
             id="memberEditor"
@@ -236,11 +283,7 @@ Wham! It's all awesome now!
             id="forgottenPasswordWidget"
             password-reset-url="{{apiUrl}}/reset">
         </plutonium-forgottenpassword-widget>
-        <iron-ajax 
-            id="sessionAjax" 
-            url="[[apiUrl]]/authentication/session?token=[[token]]" 
-            last-response="{{session}}" auto>
-        </iron-ajax>
+        
 
         <app-drawer-layout fullbleed>
 
@@ -344,6 +387,7 @@ Wham! It's all awesome now!
                     <mlm-profile-view 
                         name="profile-view" 
                         api-url="[[apiUrl]]" 
+                        profile="[[profile]]"
                         account-id="[[session.token]]">
                     </mlm-profile-view>
 
@@ -351,6 +395,7 @@ Wham! It's all awesome now!
                         name="mailbox-view" 
                         api-url="[[apiUrl]]" 
                         account-id="[[session.token]]" 
+                        mail-box-model="[[mailBoxModel]]"
                         selected-mail-box-folder="{{selectedMailboxFolder}}">
                     </mlm-mailbox-view>
 
@@ -374,6 +419,9 @@ Wham! It's all awesome now!
                         account-id="[[session.token]]" 
                         admin="[[session.powerUser]]" 
                         owner-id="[[session.token]]"
+                        info-request-params="{{infoRequestParams}}"
+                        toc-request-params="{{tocRequestParams}}"
+                        content-children-model="{{contentChildrenModel}}"
                         selected-article-id="{{contentSubrouteData.contentId}}"
                         selected-content-folder="{{selectedContentFolder}}">
                     </mlm-content-view>
@@ -494,7 +542,8 @@ Wham! It's all awesome now!
                 'demote-member': 'onOpenDemoteMember',
                 'send-to-member': 'onNavigateToMessage',
                 'change-device': 'openChangeDevicePrompt',
-                'back': 'onBack'
+                'back': 'onBack',
+                'fetch-ajax': 'onFetch'
             },
             observers: [
                 'observerAuthority(session.powerUser)'
@@ -694,7 +743,50 @@ Wham! It's all awesome now!
             },
             onBack: function () {
 
-            }
+            },
+            onFetch: function (event, detail) {
+                if (detail.ids !== undefined && detail.ids !== null && detail.ids.length > 0) {
+                    for (var i = 0; i < detail.ids.length; i++ ) {
+                        this.$[detail.ids[i]].generateRequest();
+                    }
+                }
+            },
+            
+            onContentResponse: function () {
+                console.log('Content fetched for ' + this.contentSubrouteData.contentId);
+            },
+            onContentError: function () {
+                console.log('Content fetching failed for ' + this.contentSubrouteData.contentId);
+            },
+            onParentTocResponse: function () {
+                console.log('Toc-Content-View parent path success response (' + this.contentSubrouteData.contentId + ').');
+                //                this.renderBreadCrumbs = true;
+            },
+            onParentTocError: function () {
+                console.log('Toc-Content-View parent path failed to respond (' + this.contentSubrouteData.contentId + ').');
+                this.selectedContentFolder = 'public';
+                //                this.renderBreadCrumbs = true;
+            },
+            onPublishResponse: function () {
+                this.fire('feedback', {
+                    message: 'Message published succesfully.'
+                });
+            },
+            onPublishError: function () {
+                this.fire('feedback', {
+                    message: 'Message publishing failed.'
+                });
+            },
+            onUnpublishResponse: function () {
+                this.fire('feedback', {
+                    message: 'Message unpublished succesfully.'
+                });
+            },
+            onUnpublishError: function () {
+                this.fire('feedback', {
+                    message: 'Message publishing failed.'
+                });
+            },
         });
 
     </script>
