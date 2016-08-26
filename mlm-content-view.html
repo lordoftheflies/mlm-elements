@@ -47,56 +47,11 @@ Wham! It's all awesome now!
                 display: block;
                 /*@apply(--layout-vertical);*/
             }
-            
+
             plutonium-article-section {
                 margin: 24px;
             }
         </style>
-
-        <iron-ajax id="rootModelAjax" 
-                   url="[[apiUrl]]/content-management/toc/info" 
-                   params="[[infoRequestParams]]" 
-                   handle-as="json" 
-                   last-response="{{rootModel}}" 
-                   auto></iron-ajax>
-        <iron-ajax id="parentTocAjax" 
-                   url="[[apiUrl]]/content-management/toc/path" 
-                   params="[[tocRequestParams]]" 
-                   handle-as="json" 
-                   last-response="{{parentModel}}" 
-                   on-response="onParentTocResponse" 
-                   on-error="onParentTocError" 
-                   auto></iron-ajax>
-        <iron-ajax id="childTocAjax" 
-                   url="[[apiUrl]]/content-management/toc" 
-                   params="[[tocRequestParams]]" 
-                   handle-as="json" 
-                   on-response="onContentResponse" 
-                   on-error="onContentError" 
-                   last-response="{{contentChildrenModel}}" 
-                   auto></iron-ajax>
-
-        <iron-ajax id="publisherAjax" 
-                   url="[[apiUrl]]/content-management/publish" 
-                   handle-as="json" 
-                   content-type="application/json"
-                   on-response="onPublishResponse" 
-                   on-error="onPublishError"
-                   method="POST"
-                   body="{{publisherModel}}">
-        </iron-ajax>
-        <iron-ajax id="unpublisherAjax" 
-                   url="[[apiUrl]]/content-management/unpublish" 
-                   handle-as="json" 
-                   content-type="application/json"
-                   on-response="onUnpublishResponse" 
-                   on-error="onUnpublishError"
-                   method="POST"
-                   body="{{publisherModel}}">
-        </iron-ajax>
-
-
-
         <template is="dom-if" if="{{contentChildrenModel.hasEmbeddedFile}}">
             File
             <iframe src$="{{getContentFileUrl(contentChildrenModel.embeddedFileName)}}"></iframe>
@@ -132,9 +87,9 @@ Wham! It's all awesome now!
 
 
             <plutonium-article-section class="flex layout horizontal"
-                content-model="[[contentChildrenModel]]"
+                                       content-model="[[contentChildrenModel]]"
 
-                hidden="[[!contentChildrenModel.leaf]]">
+                                       hidden="[[!contentChildrenModel.leaf]]">
 
             </plutonium-article-section>
             <!--            <paper-card heading="[[contentChildrenModel.title]]" hidden="[[!contentChildrenModel.leaf]]">
@@ -243,9 +198,13 @@ Wham! It's all awesome now!
                 console.log(this.is + ' toc navigation request parameters updated: ' + JSON.stringify(this.tocRequestParams))
                 //            if (this.contentChildrenModel !== undefined && this.contentChildrenModel.sections !== undefined)
                 //                this.splice('contentChildrenModel.sections', 0, this.contentChildrenModel.sections.length);
-                this.$.rootModelAjax.generateRequest();
-                this.$.childTocAjax.generateRequest();
-                this.$.parentTocAjax.generateRequest();
+//                this.$.rootModelAjax.generateRequest();
+//                this.$.childTocAjax.generateRequest();
+//                this.$.parentTocAjax.generateRequest();
+
+                this.fire('fetch-data', {
+                    ids: ['rootModelAjax', 'childTocAjax', 'parentTocAjax']
+                });
             },
             observeContentChildrenModel: function () {
                 var list = document.querySelector('iron-list')
@@ -382,6 +341,7 @@ Wham! It's all awesome now!
                 return '/content-tree/' + item.hasEmbeddedFile ? item.data : item.name;
             },
             onNavigate: function (event, detail) {
+                console.log('Navigate to ', event.currentTarget.name);
                 this.selectedArticleId = event.currentTarget.name;
             },
             onDeleteArticle: function (event, detail) {
@@ -393,7 +353,10 @@ Wham! It's all awesome now!
                     owner: this.ownerId,
                     article: event.currentTarget.name
                 };
-                this.$.publisherAjax.generateRequest()
+                this.fire('fetch-data', {
+                    ids: ['publisherAjax']
+                });
+//                this.$.publisherAjax.generateRequest()
             },
             onUnpublishArticle: function (event, detail) {
                 event.stopPropagation();
@@ -401,7 +364,10 @@ Wham! It's all awesome now!
                     owner: this.ownerId,
                     article: event.currentTarget.name
                 };
-                this.$.unpublisherAjax.generateRequest()
+//                this.$.unpublisherAjax.generateRequest()
+                this.fire('fetch-data', {
+                    ids: ['unpublisherAjax']
+                });
             },
             /**
              * Fired when the create new content floating-action-button pushed.
