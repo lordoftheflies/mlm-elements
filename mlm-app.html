@@ -180,7 +180,40 @@ Wham! It's all awesome now!
                    body="{{publisherModel}}">
         </iron-ajax>
         <iron-ajax id="mailBoxAjax" url="[[apiUrl]]/mailbox/[[session.token]]/[[selectedMailBoxFolder]]" last-response="{{mailBoxModel}}"></iron-ajax>
+        <!--Profile-->
+        <iron-ajax id="profileAjax" url="[[apiUrl]]/addressbook/[[session.token]]/profile" last-response="{{profile}}" auto="[[accountId]]"></iron-ajax>
+        <!--<iron-ajax id="localesAjax" url="[[apiUrl]]/localization/locales" last-response="{{locales}}" auto></iron-ajax>-->
+        <iron-ajax id="changeLanguageAjax" 
+                   method="POST"
+                   handle-as="json"
+                   content-type="application/json"
+                   url="[[apiUrl]]/localization/change" 
+                   on-response="handleChangeLanguageResponse"
+                   on-error="handleChangeLanguageError"
+                   body="{{changeLanguageModel}}"></iron-ajax>
+        <iron-ajax 
+            id="parentCandidatesAjax"
+            url="[[apiUrl]]/content-management/candidates/parent" 
+            last-response="{{parentCandidates}}" 
+            auto>
+        </iron-ajax>
 
+        <iron-ajax 
+            id="shareAjax"
+            handle-as="json"
+            content-type="application/json"
+            method="POST"
+            url="[[apiUrl]]/content-management/[[session.token]]/save" 
+            body="{{editedContentModel}}"></iron-ajax>
+        <iron-ajax 
+            id="messageSendAjax"
+            handle-as="json"
+            content-type="application/json"
+            method="POST"
+            on-response="onMessageSendResponse"
+            on-error="onMessageSendError"
+            url="[[apiUrl]]/mailbox/[[session.token]]/send" 
+            body="{{shareModel}}"></iron-ajax>
 
         <mlm-member-editor
             id="memberEditor"
@@ -348,7 +381,7 @@ Wham! It's all awesome now!
                             <paper-tab text-id="messagesPageMyContentsFolderTitle" name="drafts">Drafts</paper-tab>
                             <paper-tab text-id="messagesPagePublishedFolderTitle" name="published">Published</paper-tab>
                         </paper-tabs>
-                        <paper-tabs data-route="mailbox-view"  attr-for-selected="name" selected="{{selectedMailboxFolder}}" style="width: 100%;" autoselect>
+                        <paper-tabs data-route="mailbox-view"  attr-for-selected="name" selected="{{selectedMailBoxFolder}}" style="width: 100%;" autoselect>
                             <paper-tab text-id="mailBoxPageInboxFolderTitle" name="inbox">Inbox</paper-tab> 
                             <paper-tab text-id="sentItemsPageInboxFolderTitle" name="outbox">Sent items</paper-tab>
                         </paper-tabs>
@@ -380,6 +413,7 @@ Wham! It's all awesome now!
                     api-url="[[apiUrl]]" 
                     account-id="[[session.token]]" 
                     selected-item-ids="{{recipients}}"
+                    parent-candidates="[[parentCandidates]]"
                     content-model="{{editedContentModel}}" 
                     selected-meta-action="{{selectedMetaAction}}">
                 </mlm-send-view>
@@ -391,12 +425,16 @@ Wham! It's all awesome now!
                     account-id="[[session.token]]" 
                     selected-item-ids="{{recipients}}"
                     content-model="{{editedContentModel}}" 
+                    share-model="{{shareModel}}"
                     selected-meta-action="{{selectedMetaAction}}">
                 </mlm-share-view>
 
                 <mlm-profile-view 
                     name="profile-view" 
+                    locales="[[locales]]"
+                    profile="[[profile]]"
                     api-url="[[apiUrl]]" 
+                    changeLanguageModel="[[changeLanguageModel]]"
                     account-id="[[session.token]]">
                 </mlm-profile-view>
 
@@ -405,7 +443,7 @@ Wham! It's all awesome now!
                     api-url="[[apiUrl]]" 
                     account-id="[[session.token]]" 
                     mail-box-model="[[mailBoxModel]]"
-                    selected-mail-box-folder="{{selectedMailboxFolder}}">
+                    selected-mail-box-folder="[[selectedMailBoxFolder]]">
                 </mlm-mailbox-view>
 
                 <mlm-network-view 
@@ -486,7 +524,7 @@ Wham! It's all awesome now!
                 type: String,
 //                    value: "http://185.51.67.30:8080/topflavon-backend"
 //                    value: "https://185.51.67.30:8080/topflavon-backend"
-                value: "https://cherubits.hu:8443"
+//                value: "https://cherubits.hu:8443"
 //                    value: "https://localhost:8443/topflavon-backend"
             },
             subscriptionId: {
@@ -525,7 +563,12 @@ Wham! It's all awesome now!
                 type: String,
                 notify: true,
                 value: 'topflavon-admin'
-            }
+            },
+            selectedMailBoxFolder: {
+                type: String,
+                notify: true,
+                value: 'inbox'
+            },
 //                isMeIndicator: {
 //                    type: Boolean,
 //                    value: true,
@@ -812,6 +855,30 @@ Wham! It's all awesome now!
         },
         onBack: function () {
 
+        },
+        // Message
+        onMessageSendResponse: function () {
+            this.selectedMetaAction = 'content';
+            this.fire('feedback', {
+                message: 'Message sent successfully.'
+            });
+        },
+        onMessageSendError: function () {
+            this.fire('feedback', {
+                message: 'Message sending failed.'
+            });
+        },
+        // Share
+        onShareError: function () {
+            this.fire('feedback', {
+                message: 'Content sharing failed.'
+            });
+        },
+        onShareResponse: function () {
+            this.fire('feedback', {
+                message: (this.contentModel.id === undefined || this.contentModel === null) ? 'New content shared successfully.' : 'Content modified successfully.'
+            });
+            document.querySelector('#childTocAjax').generateRequest();
         }
     });
 

@@ -69,19 +69,6 @@ Wham! It's all awesome now!
 
         </style>
 
-        <!--Profile-->
-        <iron-ajax id="profileAjax" url="[[apiUrl]]/addressbook/[[accountId]]/profile" last-response="{{profile}}" auto="[[accountId]]"></iron-ajax>
-        <iron-ajax id="localesAjax" url="[[apiUrl]]/localization/locales" last-response="{{locales}}" auto></iron-ajax>
-
-
-        <iron-ajax id="changeLanguageAjax" 
-                   method="POST"
-                   handle-as="json"
-                   content-type="application/json"
-                   url="[[apiUrl]]/localization/change" 
-                   on-response="handleChangeLanguageResponse"
-                   on-error="handleChangeLanguageError"
-                   body="{{_changeLanguageModel}}"></iron-ajax>
 
         
 
@@ -137,7 +124,7 @@ Wham! It's all awesome now!
                     notify: true,
                     value: false
                 },
-                _changeLanguageModel: {
+                changeLanguageModel: {
                     type: Object,
                     notify: true
                 }
@@ -153,11 +140,11 @@ Wham! It's all awesome now!
             },
             onSelect: function (event, details) {
                 if (this._init) {
-                    this._changeLanguageModel = {
+                    this.changeLanguageModel = {
                         accountId: this.profile.id,
                         language: this.profile.preferredLanguage
                     };
-                    console.log('Change language request: ' + JSON.stringify(this._changeLanguageModel));
+                    console.log('Change language request: ' + JSON.stringify(this.changeLanguageModel));
                     this.$.changeLanguageAjax.generateRequest();
                 } else {
                     this._init = true;

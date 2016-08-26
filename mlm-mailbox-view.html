@@ -91,14 +91,15 @@ Wham! It's all awesome now!
                 selectedMailBoxFolder: {
                     type: String,
                     notify: true,
-                    value: 'inbox'
+//                    reflectToAttribute: true
+                //                    value: 'inbox'
                 },
                 accountId: {
                     type: String,
                     notify: true
                 },
                 mailBoxModel: {
-                    type: Object,
+                    type: Array,
                     notify: true
                 }
             },
@@ -116,7 +117,9 @@ Wham! It's all awesome now!
             },
             computeMailboxFolderRequest: function (accountId, selectedMailBoxFolder) {
                 console.log(this.is + ' fetch ' + selectedMailBoxFolder + ' from ' + accountId + '\'s mailbox.');
-                this.$.mailBoxAjax.generateRequest();
+                this.fire('fetch-data', {
+                    ids: ['mailBoxAjax']
+                });
             },
             isOutbox: function (selectedMailBoxFolder) {
                 return selectedMailBoxFolder === 'outbox';

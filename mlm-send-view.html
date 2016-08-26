@@ -55,29 +55,7 @@ Wham! It's all awesome now!
                         }*/
         </style>
 
-        <iron-ajax 
-            id="parentCandidatesAjax"
-            url="{{apiUrl}}/content-management/candidates/parent" 
-            last-response="{{parentCandidates}}" 
-            auto>
-        </iron-ajax>
-
-        <iron-ajax 
-            id="shareAjax"
-            handle-as="json"
-            content-type="application/json"
-            method="POST"
-            url="[[apiUrl]]/content-management/[[accountId]]/save" 
-            body="{{contentModel}}"></iron-ajax>
-        <iron-ajax 
-            id="messageSendAjax"
-            handle-as="json"
-            content-type="application/json"
-            method="POST"
-            on-response="onMessageSendResponse"
-            on-error="onMessageSendError"
-            url="[[apiUrl]]/mailbox/[[accountId]]/send" 
-            body="{{shareModel}}"></iron-ajax>
+        
         <paper-card elevation="1" name="share" heading="Share with others" class="layout vertical main-action-fab-container">
                 <div class="card-content layout horizontal">
                     <div class="flex layout vertical">
@@ -191,23 +169,16 @@ Wham! It's all awesome now!
                 console.log('Save content: ' + JSON.stringify(this.contentModel));
                 this.contentModel.leaf = true;
                 this.$.shareAjax.generateRequest();
+                this.fire('fetch-data', {
+                    ids: ['shareAjax']
+                });
 //                this.fire('share', {
 //                    content: this.contentModel,
 //                    recipients: this.selectedContactIds,
 //                    message: this.message
 //                });
             },
-            onShareError: function () {
-                this.fire('feedback', {
-                    message: 'Content sharing failed.'
-                });
-            },
-            onShareResponse: function () {
-                this.fire('feedback', {
-                    message: (this.contentModel.id === undefined || this.contentModel === null) ? 'New content shared successfully.' : 'Content modified successfully.'
-                });
-                document.querySelector('#childTocAjax').generateRequest();
-            },
+            
             onNewArticle: function () {
                 this.contentModel = {
                     sections: [
@@ -258,19 +229,12 @@ Wham! It's all awesome now!
                 this.shareModel.recipients = this.selectedItemIds;
                 this.shareModel.message = this.message;
                 this.shareModel.contentId = this.contentModel.id;
-                this.$.messageSendAjax.generateRequest();
-            },
-            onMessageSendResponse: function () {
-                this.selectedMetaAction = 'content';
-                this.fire('feedback', {
-                    message: 'Message sent successfully.'
+//                Sthis.$.messageSendAjax.generateRequest();
+                this.fire('fetch-data', {
+                    ids: ['messageSendAjax']
                 });
             },
-            onMessageSendError: function () {
-                this.fire('feedback', {
-                    message: 'Message sending failed.'
-                });
-            },
+            
             getUserName: function (id) {
                 if (this.items !== undefined && this.items !== null) {
                     var name = 'Unknown';
