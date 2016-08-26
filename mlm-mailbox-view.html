@@ -43,8 +43,7 @@ Wham! It's all awesome now!
 
         </style>
 
-        <iron-ajax id="mailBoxAjax" url="[[apiUrl]]/mailbox/[[accountId]]/[[selectedMailBoxFolder]]" last-response="{{mailBoxModel}}"></iron-ajax>
-
+        
         <!--<template is="dom-if" if="{{!isEmpty(data)}}">-->
         <iron-list items="[[mailBoxModel]]" as="message" hidden="[[isEmpty(mailBoxModel)]]" class="layout vertical">
             <template>

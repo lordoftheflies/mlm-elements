@@ -179,6 +179,8 @@ Wham! It's all awesome now!
                    method="POST"
                    body="{{publisherModel}}">
         </iron-ajax>
+        <iron-ajax id="mailBoxAjax" url="[[apiUrl]]/mailbox/[[session.token]]/[[selectedMailBoxFolder]]" last-response="{{mailBoxModel}}"></iron-ajax>
+
 
         <mlm-member-editor
             id="memberEditor"
@@ -402,6 +404,7 @@ Wham! It's all awesome now!
                     name="mailbox-view" 
                     api-url="[[apiUrl]]" 
                     account-id="[[session.token]]" 
+                    mail-box-model="[[mailBoxModel]]"
                     selected-mail-box-folder="{{selectedMailboxFolder}}">
                 </mlm-mailbox-view>
 
