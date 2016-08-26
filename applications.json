@@ -1,0 +1,14 @@
+[
+    {
+        "id": "topflavon-admin",
+        "name": "TopFlavon Control Panel",
+        "url": "/admin",
+        "icon": "icons:gavel"
+    },
+    {
+        "id": "topflavon-ui",
+        "name": "TopFlavon",
+        "url": "/ui",
+        "icon": "icons:record-voice-over"
+    }
+]
